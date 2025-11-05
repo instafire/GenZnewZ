@@ -1,0 +1,13 @@
+{
+    "name": "LaraMag",
+    "namespace": "Theme\\LaraMag\\",
+    "description": "Theme for magazine/news site.",
+    "author": "Botble Technologies",
+    "required_plugins": [
+        "blog",
+        "contact",
+        "gallery",
+        "language",
+        "simple-slider"
+    ]
+}
