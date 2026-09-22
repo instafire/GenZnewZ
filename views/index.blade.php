@@ -4,13 +4,18 @@
     $featured = get_featured_posts(['limit' => 5]) ?? collect();
     $latest = get_latest_posts(['limit' => 12]) ?? collect();
 
+    // Eager-load categories once: the hero section reads $post->categories per post (N+1 otherwise).
+    if ($featured instanceof \Illuminate\Support\Collection && $featured->isNotEmpty()) {
+        $featured->loadMissing('categories');
+    }
+
     // Fetch top categories to strengthen internal linking.
     $topCategories = get_categories(['limit' => 8]) ?? collect();
 @endphp
 
 <section class="home">
     <section class="container">
-        <h1 style="position:absolute;left:-9999px;">GenZNewz ®C Latest Stories</h1>
+        <h1 style="position:absolute;left:-9999px;">GenZNewz ‚Äî Latest Stories</h1>
 
         {{-- HERO / FEATURED --}}
         @if ($featured->count())
@@ -29,7 +34,7 @@
                             <div class="hero-meta">
                                 <time datetime="{{ $post->created_at }}">{{ Theme::formatDate($post->created_at) }}</time>
                                 @if ($post->categories?->count())
-                                    <span>°§</span>
+                                    <span>„ÄÅ</span>
                                     <a href="{{ $post->categories->first()->url }}">{{ $post->categories->first()->name }}</a>
                                 @endif
                             </div>

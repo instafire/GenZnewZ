@@ -8,9 +8,9 @@
         @endif
         @foreach ($categories as $category)
             @php
-                $allRelatedCategoryIds = array_unique(array_merge(app(\Botble\Blog\Repositories\Interfaces\CategoryInterface::class)->getAllRelatedChildrenIds($category), [$category->id]));
-
-                $postCategories = app(\Botble\Blog\Repositories\Interfaces\PostInterface::class)->getByCategory($allRelatedCategoryIds, 0, 6);
+                // Posts are precomputed in the shortcode callback (see functions/shortcodes.php):
+                // no DB queries happen inside this partial anymore.
+                $postCategories = $postsByCategory[$category->id] ?? collect();
             @endphp
             @if (count($postCategories) > 0)
                     <section class="block-post-wrap-item block-post1-wrap-item fleft bsize">

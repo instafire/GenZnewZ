@@ -34,12 +34,6 @@ return [
 
     'events' => [
 
-        // Before event inherit from package config and the theme that call before,
-        // you can use this event to set meta, breadcrumb template or anything
-        // you want inheriting.
-        'before' => function (Theme $theme): void {
-        },
-
         // Listen on event before render a theme,
         // this event should call to assign some assets,
         // breadcrumb template.
@@ -104,7 +98,6 @@ return [
         'beforeRenderLayout' => [
 
             'default' => function (Theme $theme): void {
-                // $theme->asset()->usePath()->add('ipad', 'css/layouts/ipad.css');
             },
         ],
     ],
