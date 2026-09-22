@@ -54,7 +54,29 @@ app()->booted(function (): void {
                 ]);
             }
 
-            return Theme::partial('short-codes.category-posts', compact('categories', 'shortcode'));
+            // Precompute posts per category here instead of querying inside the
+            // Blade partial (2 queries x N categories = the N+1 Jules flagged).
+            // Eager-load author + categories so the partial's lazy reads stay free.
+            $categoryRepository = app(\Botble\Blog\Repositories\Interfaces\CategoryInterface::class);
+            $postRepository = app(\Botble\Blog\Repositories\Interfaces\PostInterface::class);
+
+            $postsByCategory = [];
+            foreach ($categories as $category) {
+                $allRelatedCategoryIds = array_unique(array_merge(
+                    $categoryRepository->getAllRelatedChildrenIds($category),
+                    [$category->id]
+                ));
+
+                $posts = $postRepository->getByCategory($allRelatedCategoryIds, 0, 6);
+
+                if ($posts instanceof \Illuminate\Support\Collection && $posts->isNotEmpty()) {
+                    $posts->loadMissing(['author', 'categories']);
+                }
+
+                $postsByCategory[$category->id] = $posts;
+            }
+
+            return Theme::partial('short-codes.category-posts', compact('categories', 'postsByCategory', 'shortcode'));
         });
 
         shortcode()->setAdminConfig('category-posts', function (array $attributes) {
