@@ -64,12 +64,55 @@ class GenerateSitemap extends Command
                 $this->generateNewsSitemap();
             }
 
+            if ($type === 'all') {
+                $this->generateSitemapIndex();
+            }
+
             return self::SUCCESS;
         } catch (\Exception $e) {
             $this->error('Failed to generate sitemap: ' . $e->getMessage());
             \Log::error('Sitemap generation failed: ' . $e->getMessage());
             return self::FAILURE;
         }
+    }
+
+    /**
+     * Write public/sitemap.xml as a proper sitemapindex referencing the
+     * individual sitemaps, so crawlers discover posts/pages/ai/news sitemaps
+     * from the index instead of only seeing a handful of static URLs.
+     */
+    protected function generateSitemapIndex(): void
+    {
+        $this->info('Generating sitemap index...');
+
+        $base = rtrim(url('/'), '/');
+        $now = now()->toIso8601String();
+
+        $subs = [
+            'sitemap-posts.xml',
+            'sitemap-pages.xml',
+            'sitemap-ai.xml',
+            'news-sitemap.xml',
+        ];
+
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
+        $xml .= '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . PHP_EOL;
+
+        foreach ($subs as $file) {
+            if (! file_exists($this->outputPath($file))) {
+                continue;
+            }
+
+            $xml .= '  <sitemap>' . PHP_EOL;
+            $xml .= '    <loc>' . htmlspecialchars($base . '/' . $file) . '</loc>' . PHP_EOL;
+            $xml .= '    <lastmod>' . $now . '</lastmod>' . PHP_EOL;
+            $xml .= '  </sitemap>' . PHP_EOL;
+        }
+
+        $xml .= '</sitemapindex>' . PHP_EOL;
+
+        file_put_contents($this->outputPath('sitemap.xml'), $xml);
+        $this->info('Sitemap index generated: ' . $this->outputPath('sitemap.xml'));
     }
 
     /**

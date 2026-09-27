@@ -95,6 +95,16 @@ class PexelsImageService
         'streaming'         => 'streaming video entertainment screen',
         'viewbot'           => 'computer streaming fake screen',
         'web3'              => 'blockchain technology digital',
+        'alibaba'           => 'ecommerce technology china business',
+        'qwen'              => 'artificial intelligence language model',
+        'anthropic'         => 'artificial intelligence technology',
+        'claude'            => 'artificial intelligence assistant computer',
+        'gemini'            => 'artificial intelligence technology',
+        'copilot'           => 'artificial intelligence coding computer',
+        'agentic'           => 'artificial intelligence robot automation',
+        'nvidia'            => 'computer chip gpu technology',
+        'semiconductor'      => 'computer chip technology',
+        'data center'       => 'server data center technology',
 
         // Politics / World
         'trump'             => 'united states politics white house',

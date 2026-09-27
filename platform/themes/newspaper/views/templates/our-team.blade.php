@@ -19,7 +19,7 @@
                     <div class="border rounded-4 h-100 p-4 shadow-sm">
                         <h2 class="h4">Aman</h2>
                         <p class="text-muted mb-3">Editor-in-Chief and Technology Correspondent</p>
-                        <p>Aman leads GenZ NewZ editorial strategy and covers technology, AI, and digital culture. The focus is clear reporting, practical context, and stories that explain how new systems affect everyday life.</p>
+                        <p>Aman founded GenZ NewZ and leads its editorial strategy as Editor-in-Chief. He built the newsroom's AI-assisted reporting pipeline and sets its editorial standards. He covers technology, AI, and digital culture with a focus on clear reporting, practical context, and explaining how new systems affect everyday life.</p>
                     </div>
                 </div>
                 <div class="col-md-6">
