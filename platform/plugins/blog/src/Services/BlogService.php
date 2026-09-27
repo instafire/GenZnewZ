@@ -46,9 +46,12 @@ class BlogService
                     ->with(['categories', 'tags', 'slugable', 'categories.slugable', 'tags.slugable'])
                     ->firstOrFail();
 
-                if (Helper::handleViewCount($post, 'viewed_post')) {
-                    cache()->forget(HomepageDataService::CACHE_KEY);
-                }
+                // View counting must not bust the homepage cache: with steady
+                // crawler/bot traffic every unique post view invalidated
+                // homepage_data_v5 within seconds, so the 10-minute cache never
+                // survived and every homepage hit paid the full ~3s query cost.
+                // Trending-by-views stays fresh enough via the cache TTL.
+                Helper::handleViewCount($post, 'viewed_post');
 
                 SeoHelper::setTitle($post->name)
                     ->setDescription($post->description);
