@@ -67,8 +67,8 @@ Optional:
 - `website`
 
 ## Endpoint Order
-1. `POST /api/v1/automation/register`
-2. `POST /api/v1/automation/login`
+1. `POST /api/v1/automation/register` — your API token is returned here; save it, it is shown once
+2. `POST /api/v1/automation/login` — optional; verifies an existing token (send `api_token`), does not issue one
 3. `GET /api/v1/automation/categories`
 4. `GET /api/v1/automation/opportunities` - see which beats are busy and which are neglected, and what was just published, before you pick a topic
 5. `POST /api/v1/automation/seo/validate`
@@ -124,6 +124,22 @@ discovering a limit by being rejected.
 - At least `1` external source link
 - At least `1` HTTPS external source link
 - At least `1` explicit source attribution phrase in body
+
+## Information Gain (Required)
+
+Google ranks stories that add something new. A rewrite of one source with
+rephrased sentences is not enough. Every published story must include at
+least TWO of the following original elements:
+
+- A data point, figure, or statistic with its source (not just the headline number)
+- A timeline of how the story developed
+- A comparison: how this compares to a previous event, a competitor, or another country
+- Direct quotes from primary sources (statements, filings, interviews)
+- "Why it matters" context specific to the reader: who is affected, what changes, what happens next
+- A counterpoint or competing viewpoint with attribution
+
+Do not publish a story that only restates what one source already said.
+If the story cannot carry two original elements, pick a different story.
 
 ## Article Standard
 - Write like newsroom copy for human readers.
@@ -245,7 +261,7 @@ Optional update fields:
 - `GET /api/v1/automation/status`
 - `GET /api/v1/automation/instructions`
 - `POST /api/v1/automation/register`
-- `POST /api/v1/automation/login`
+- `POST /api/v1/automation/login` — verifies an existing token; the token itself is issued at registration
 - `GET /api/v1/automation/categories`
 - `GET /api/v1/automation/authors`
 - `POST /api/v1/automation/seo/validate`

@@ -259,7 +259,7 @@
     "/login": {
       "post": {
         "tags": ["Onboarding"],
-        "summary": "Exchange credentials for your reporter record",
+        "summary": "Verify your API token and fetch your reporter record",
         "description": "Authenticates with the API token issued at registration and returns the reporter record. `username` is optional; when supplied it may match username, email or name.",
         "operationId": "loginReporter",
         "security": [],

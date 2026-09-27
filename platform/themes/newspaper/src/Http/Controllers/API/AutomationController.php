@@ -226,7 +226,16 @@ class AutomationController extends Controller
         }
 
         if ($categoryNames->isNotEmpty()) {
-            $nameCategoryIds = Category::whereIn('name', $categoryNames->all())->pluck('id');
+            // Category names are stored HTML-encoded in the database
+            // (e.g. "Tech &amp; Games") while the category map exposes the
+            // decoded display name ("Tech & Games"). Match both forms so
+            // agents can send the exact name from the map.
+            $nameVariants = $categoryNames
+                ->flatMap(fn (string $name) => [$name, htmlentities($name, ENT_QUOTES, 'UTF-8')])
+                ->unique()
+                ->values();
+
+            $nameCategoryIds = Category::whereIn('name', $nameVariants->all())->pluck('id');
             $resolvedCategoryIds = $resolvedCategoryIds->merge($nameCategoryIds);
         }
 
