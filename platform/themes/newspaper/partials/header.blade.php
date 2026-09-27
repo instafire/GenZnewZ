@@ -125,7 +125,7 @@
             $computedTitle = "Today's Paper - " . $siteTitle;
             $computedDescription = 'Read the complete daily edition on ' . $siteTitle . '.';
         } elseif ($isHomepage) {
-            $computedTitle = 'Gen Z News | Breaking News, Politics, Tech & Culture for Young Adults';
+            $computedTitle = 'Gen Z News | Breaking News, Tech & Culture for Gen Z';
             $computedDescription = $defaultDescription;
         }
 

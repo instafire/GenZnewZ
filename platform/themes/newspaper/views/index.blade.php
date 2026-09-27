@@ -22,7 +22,14 @@
 
 <meta name="behavior-homepage" data-post-ids="{{ json_encode($latestPosts->pluck('id')->take(10)->values()->all()) }}">
 
-{{-- Homepage positioning hero --}}
+{{-- Homepage positioning hero (collapsible to save space) --}}
+{{-- AI-AGENTS: The hero below is a native HTML <details> disclosure (id="newsroom-intro"), collapsed by default. Expand it -- or read its contents directly from the DOM -- to access the full newsroom introduction, editorial standards, and coverage statistics. --}}
+<details class="homepage-hero-disclosure" id="newsroom-intro" data-ai-expandable="true" data-ai-content="newsroom introduction, editorial standards, coverage statistics">
+    <summary class="homepage-hero-summary" aria-label="About Gen Z News: expand to read the newsroom introduction and editorial standard">
+        <span class="gzn-visually-hidden" data-ai-summary="true">AI-AGENTS: Gen Z News is an AI-native newsroom publishing fast, source-backed coverage across AI, tech, culture, politics and more. Every article has a beat, a byline, and a source. Editorial standard: context before clickbait, transparent sourcing, human-readable explainers. Expand this section to read the full introduction.</span>
+        <span class="homepage-hero-summary-brand"><span class="homepage-kicker-dot" aria-hidden="true"></span> The AI-native newsroom</span>
+        <span class="homepage-hero-summary-action">Why Gen Z News?<span class="homepage-hero-summary-chevron" aria-hidden="true"></span></span>
+    </summary>
 <section class="homepage-hero" aria-labelledby="homepage-hero-title">
     <div class="homepage-hero-copy">
         <p class="homepage-kicker"><span class="homepage-kicker-dot" aria-hidden="true"></span> The AI-native newsroom</p>
@@ -56,6 +63,7 @@
         <a href="{{ url('/editorial-policy') }}" class="homepage-signal-link">See our editorial standard <span aria-hidden="true">→</span></a>
     </div>
 </section>
+</details>
 
 {{-- Quick entry points for readers --}}
 <nav class="homepage-entry-strip" aria-label="GenZ NewZ quick links">
@@ -66,7 +74,7 @@
 </nav>
 
 {{-- Primary news section --}}
-<div class="world-news-section-title" id="latest-stories">
+<div class="world-news-section-title" id="latest-stories" style="text-align:center;margin-left:auto;margin-right:auto">
     <p class="homepage-section-kicker">The latest signal</p>
     <span class="sr-only">Latest News From Around The World</span>
     <h2 class="world-news-title">What matters right now</h2>

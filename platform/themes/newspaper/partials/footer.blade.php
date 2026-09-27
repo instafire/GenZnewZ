@@ -137,6 +137,7 @@
                 <a href="{{ url('/terms-of-service') }}">Terms</a>
                 <a href="{{ url('/cookie-policy') }}">Cookies</a>
                 <a href="{{ url('/dmca') }}">DMCA</a>
+                <a href="/press">Press Kit</a>
             </div>
             <p class="footer-external-links">
                 External references:

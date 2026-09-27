@@ -144,7 +144,7 @@ return [
         'mail_gun_domain_placeholder' => 'Ex: mg.yourdomain.com',
         'mail_gun_domain_helper' => 'The domain name you registered with Mailgun',
         'mail_gun_secret' => 'Secret',
-        'mail_gun_secret_placeholder' => 'Ex: key-YOUR-MAILGUN-KEY-HERE',
+        'mail_gun_secret_placeholder' => 'Ex: key-YOUR-MAILGUN-KEY-HEREef',
         'mail_gun_secret_helper' => 'Your Mailgun API key',
         'mail_gun_endpoint' => 'Endpoint',
         'mail_gun_endpoint_placeholder' => 'Ex: api.mailgun.net',

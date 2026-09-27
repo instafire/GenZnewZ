@@ -110,5 +110,11 @@ class AppServiceProvider extends ServiceProvider
                 ->by($quota->key(AutomationQuotaService::PUBLISH, $request))
                 ->response($deny);
         });
+
+        RateLimiter::for(AutomationQuotaService::RECOVER, function (Request $request) use ($quota, $deny) {
+            return Limit::perHour($quota->limit(AutomationQuotaService::RECOVER))
+                ->by($quota->key(AutomationQuotaService::RECOVER, $request))
+                ->response($deny);
+        });
     }
 }

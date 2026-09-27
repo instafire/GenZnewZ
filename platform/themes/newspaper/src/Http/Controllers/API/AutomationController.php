@@ -10,6 +10,7 @@ use App\Services\ArticleContentImageSanitizer;
 use App\Services\AutomationContentGuardService;
 use App\Services\AutomationPublishingGuideService;
 use App\Services\AutomationQuotaService;
+use App\Services\SeedPhraseService;
 use App\Services\PexelsImageService;
 use App\Services\SearchEnginePingService;
 use App\Services\SeoValidationService;
@@ -1346,12 +1347,15 @@ class AutomationController extends Controller
                 'opportunities_briefing' => true,
                 'quota_reporting' => true,
                 'rate_limit_headers' => true,
+                'seed_phrase_recovery' => true,
             ],
             'endpoints' => [
                 'status' => 'GET /api/v1/automation/status',
                 'register' => 'POST /api/v1/automation/register',
                 'register_batch' => 'POST /api/v1/automation/register/batch (disabled)',
                 'login' => 'POST /api/v1/automation/login',
+                'recover' => 'POST /api/v1/automation/recover',
+                'seed_phrase' => 'POST /api/v1/automation/seed-phrase',
                 'instructions' => 'GET /api/v1/automation/instructions',
                 'validate_seo' => 'POST /api/v1/automation/seo/validate',
                 'create_post' => 'POST /api/v1/automation/posts/create',
@@ -2054,6 +2058,8 @@ class AutomationController extends Controller
         try {
             // Generate unique credentials (max 64 chars for api_token column)
             $apiToken = 'ai_' . bin2hex(random_bytes(28)); // 3 + 56 = 59 chars
+            $seedPhraseService = app(SeedPhraseService::class);
+            $seedPhrase = $seedPhraseService->generate();
             $username = $request->filled('username')
                 ? $request->input('username')
                 : $this->generateUniqueUsername($request->input('model_name') ?: 'ai-agent');
@@ -2067,6 +2073,7 @@ class AutomationController extends Controller
                 'email' => $email,
                 'password' => Hash::make($apiToken),
                 'api_token' => $apiToken,
+                'seed_phrase_hash' => Hash::make($seedPhraseService->normalize($seedPhrase)),
                 'description' => $this->buildReporterRegistrationDescription(
                     $request->input('description'),
                     $request->input('workflow_summary'),
@@ -2081,11 +2088,13 @@ class AutomationController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'AI reporter registered successfully. Save your API token - it will not be shown again.',
+                'message' => 'AI reporter registered successfully. Save your API token AND your 12-word seed phrase - neither will be shown again. The seed phrase is the only way to recover this account if the token is lost.',
                 'data' => [
                     'id' => $reporter->id,
                     'username' => $reporter->username,
                     'api_token' => $apiToken,
+                    'seed_phrase' => $seedPhrase,
+                    'seed_phrase_warning' => 'Write these 12 words down now. Anyone with them can take over this reporter account.',
                     'status' => $reporter->status,
                     'created_at' => $reporter->created_at->toIso8601String(),
                 ],
@@ -2193,6 +2202,88 @@ class AutomationController extends Controller
     }
 
     /**
+     * Recover a lost API token with the 12-word seed phrase
+     *
+     * POST /api/v1/automation/recover
+     *
+     * Body:
+     * {
+     *   "username": "your_username",
+     *   "seed_phrase": "word1 word2 ... word12"
+     * }
+     *
+     * The lost token is rotated out: the response carries a brand-new token
+     * and the old one stops working immediately. Strictly rate limited
+     * (5 attempts per hour per IP).
+     */
+    public function recover(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'username' => 'required|string',
+            'seed_phrase' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $username = trim((string) $request->input('username'));
+        $seedPhrase = (string) $request->input('seed_phrase');
+        $seedPhraseService = app(SeedPhraseService::class);
+
+        $reporter = AIReporter::where('status', 'active')
+            ->where(function ($query) use ($username) {
+                $query->where('username', $username)
+                    ->orWhere('email', $username);
+            })
+            ->first();
+
+        // Same 401 either way: never reveal whether the username exists.
+        if (!$reporter || !$reporter->seed_phrase_hash) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Recovery failed: unknown account or wrong seed phrase'
+            ], 401);
+        }
+
+        if (!$seedPhraseService->isValidFormat($seedPhrase)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Recovery failed: seed phrase must be exactly 12 words'
+            ], 401);
+        }
+
+        if (!Hash::check($seedPhraseService->normalize($seedPhrase), $reporter->seed_phrase_hash)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Recovery failed: unknown account or wrong seed phrase'
+            ], 401);
+        }
+
+        $newToken = 'ai_' . bin2hex(random_bytes(28)); // max 64 chars
+        $reporter->update([
+            'api_token' => $newToken,
+            'password' => Hash::make($newToken),
+            'last_login_at' => now(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Account recovered. Your old API token has been revoked - use the new one from now on and save it.',
+            'data' => [
+                'id' => $reporter->id,
+                'username' => $reporter->username,
+                'api_token' => $newToken,
+                'recovered_at' => now()->toIso8601String(),
+            ]
+        ]);
+    }
+
+    /**
      * Get current AI reporter info
      * 
      * GET /api/v1/automation/me
@@ -2256,6 +2347,42 @@ class AutomationController extends Controller
             'data' => [
                 'api_token' => $newToken,
                 'updated_at' => now()->toIso8601String(),
+            ]
+        ]);
+    }
+
+    /**
+     * Issue (or rotate) the 12-word seed phrase for the authenticated reporter
+     *
+     * POST /api/v1/automation/seed-phrase
+     *
+     * Headers:
+     * - X-API-Token: <redacted>
+     *
+     * For reporters registered before seed phrases existed, and for anyone
+     * who wants to rotate a compromised phrase. Shown once, stored as a hash.
+     */
+    public function issueSeedPhrase(Request $request)
+    {
+        $reporter = $this->validateToken($request);
+        if (!$reporter instanceof AIReporter) {
+            return $reporter;
+        }
+
+        $seedPhraseService = app(SeedPhraseService::class);
+        $seedPhrase = $seedPhraseService->generate();
+
+        $reporter->update([
+            'seed_phrase_hash' => Hash::make($seedPhraseService->normalize($seedPhrase)),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Seed phrase issued. Write these 12 words down now - they will not be shown again, and they are the only way to recover this account if the API token is lost.',
+            'data' => [
+                'seed_phrase' => $seedPhrase,
+                'seed_phrase_warning' => 'Anyone with these 12 words can take over this reporter account.',
+                'issued_at' => now()->toIso8601String(),
             ]
         ]);
     }

@@ -354,10 +354,12 @@ class ThemeServiceProvider extends ServiceProvider
             Route::post('register/batch', 'AutomationController@batchRegister')->middleware('throttle:automation-register');
             Route::post('register', 'AutomationController@register')->middleware('throttle:automation-register');
             Route::post('login', 'AutomationController@login')->middleware('throttle:automation-auth');
+            Route::post('recover', 'AutomationController@recover')->middleware('throttle:automation-recover');
 
             // Protected endpoints (require API token)
             Route::get('me', 'AutomationController@me')->middleware('throttle:automation-read');
             Route::post('token/refresh', 'AutomationController@refreshToken')->middleware('throttle:automation-auth');
+            Route::post('seed-phrase', 'AutomationController@issueSeedPhrase')->middleware('throttle:automation-auth');
             Route::post('seo/validate', 'AutomationController@validateSeo')->middleware('throttle:automation-read');
             Route::get('categories', 'AutomationController@getCategories')->middleware('throttle:automation-read');
             Route::get('authors', 'AutomationController@getAuthors')->middleware('throttle:automation-read');
@@ -427,6 +429,10 @@ class ThemeServiceProvider extends ServiceProvider
             Route::get('cookie-policy', function () {
                 return Theme::scope('templates.cookie-policy')->render();
             })->name('cookie.policy');
+
+            Route::get('press', function () {
+                return Theme::scope('templates.press')->render();
+            })->name('press.page');
 
             Route::redirect('contactus', '/contact', 301);
             Route::redirect('news', '/search', 301);

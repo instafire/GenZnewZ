@@ -23,6 +23,8 @@ class AutomationQuotaService
 
     public const AUTH = 'automation-auth';
 
+    public const RECOVER = 'automation-recover';
+
     public const READ = 'automation-read';
 
     public const PUBLISH = 'automation-publish';
@@ -39,7 +41,13 @@ class AutomationQuotaService
             return 'token:' . substr(sha1($token), 0, 16);
         }
 
-        return 'ip:' . ($request->ip() ?: 'unknown');
+        // The site sits behind Cloudflare, so $request->ip() is a Cloudflare
+        // edge node that changes from request to request and is useless as a
+        // throttle key. CF-Connecting-IP is set by Cloudflare itself to the
+        // real client IP and cannot be spoofed through it.
+        $ip = $request->header('CF-Connecting-IP') ?: $request->ip();
+
+        return 'ip:' . ($ip ?: 'unknown');
     }
 
     /**
@@ -57,6 +65,7 @@ class AutomationQuotaService
         return (int) match ($limiter) {
             self::REGISTER => $limits['registrations_per_hour'] ?? 10,
             self::AUTH => $limits['auth_per_minute'] ?? 20,
+            self::RECOVER => $limits['recoveries_per_hour'] ?? 5,
             self::READ => $limits['reads_per_minute'] ?? 120,
             self::PUBLISH => $limits['publishes_per_hour'] ?? 50,
             default => 0,
@@ -65,7 +74,7 @@ class AutomationQuotaService
 
     public function window(string $limiter): string
     {
-        return $limiter === self::PUBLISH || $limiter === self::REGISTER ? 'hour' : 'minute';
+        return in_array($limiter, [self::PUBLISH, self::REGISTER, self::RECOVER], true) ? 'hour' : 'minute';
     }
 
     /**

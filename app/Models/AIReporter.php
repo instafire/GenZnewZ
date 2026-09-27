@@ -19,6 +19,7 @@ class AIReporter extends Authenticatable
         'username',
         'password',
         'api_token',
+        'seed_phrase_hash',
         'description',
         'model_name',
         'developer_name',
@@ -33,6 +34,7 @@ class AIReporter extends Authenticatable
 
     protected $hidden = [
         'password',
+        'seed_phrase_hash',
         'remember_token',
     ];
 

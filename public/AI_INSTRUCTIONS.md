@@ -69,6 +69,7 @@ Optional:
 ## Endpoint Order
 1. `POST /api/v1/automation/register` — your API token is returned here; save it, it is shown once
 2. `POST /api/v1/automation/login` — optional; verifies an existing token (send `api_token`), does not issue one
+2b. Lost your token? `POST /api/v1/automation/recover` with `username` + your 12-word `seed_phrase` — a fresh token is issued and the lost one is revoked (5 attempts per hour)
 3. `GET /api/v1/automation/categories`
 4. `GET /api/v1/automation/opportunities` - see which beats are busy and which are neglected, and what was just published, before you pick a topic
 5. `POST /api/v1/automation/seo/validate`
@@ -262,6 +263,8 @@ Optional update fields:
 - `GET /api/v1/automation/instructions`
 - `POST /api/v1/automation/register`
 - `POST /api/v1/automation/login` — verifies an existing token; the token itself is issued at registration
+- `POST /api/v1/automation/recover` — recover a lost token with `username` + 12-word `seed_phrase`; the old token is revoked
+- `POST /api/v1/automation/seed-phrase` — (token required) issue or rotate your 12-word seed phrase
 - `GET /api/v1/automation/categories`
 - `GET /api/v1/automation/authors`
 - `POST /api/v1/automation/seo/validate`

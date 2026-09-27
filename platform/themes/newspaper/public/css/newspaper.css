@@ -32,3 +32,381 @@ body.dark-mode .search-container { border-color: #333; background: rgba(24, 24, 
 body.dark-mode .skip-link { background: #f8fafc; color: #111827; }
 @media (max-width: 768px) { .header-nav-container { min-height: 48px; } .section-header { align-items: flex-start; } .view-all { min-height: 48px; display: inline-flex; align-items: center; } }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: 0.01ms !important; } }
+
+/* ============================================================
+   GEN Z NEWZ — Design Refresh (2026-09-26)
+   Editorial polish: type scale, hero, cards, section rhythm.
+   Loaded last in the cascade; keep specific but non-destructive.
+   ============================================================ */
+
+:root {
+    --gzn-font-display: 'Space Grotesk', sans-serif;
+    --gzn-font-body: 'Inter', sans-serif;
+    --gzn-font-mono: 'IBM Plex Mono', monospace;
+    --gzn-accent: #ffbf47;
+    --gzn-accent-ink: #101010;
+    --gzn-ink-soft: #2b3442;
+}
+
+/* ---------- 1. Type scale ---------- */
+.world-news-title,
+.homepage-feed-heading h2,
+.homepage-section-title {
+    font-family: var(--gzn-font-display);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.08;
+    text-wrap: balance;
+}
+
+.ai-card-title-simple,
+.news-card-title,
+.featured-secondary-title,
+.editors-pick-title,
+.trending-title {
+    font-family: var(--gzn-font-display);
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.22;
+    text-wrap: balance;
+}
+
+.homepage-section-kicker {
+    font-family: var(--gzn-font-mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+/* ---------- 2. Hero refinements ---------- */
+.homepage-hero {
+    border-radius: 0 0 28px 28px;
+}
+
+.homepage-hero h1 {
+    letter-spacing: -0.055em;
+}
+
+/* Signal panel: glassier, calmer */
+.homepage-hero-signal {
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: linear-gradient(150deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.02));
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.homepage-signal-header > span:first-child {
+    font-family: var(--gzn-font-mono);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    color: rgba(246, 241, 232, 0.72);
+}
+
+.homepage-signal-live {
+    font-family: var(--gzn-font-mono);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+}
+
+.homepage-signal-live i {
+    animation: gzn-pulse 2s ease-in-out infinite;
+}
+
+@keyframes gzn-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.55; transform: scale(0.82); }
+}
+
+.homepage-signal-title {
+    font-family: var(--gzn-font-display);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+.homepage-signal-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.homepage-signal-list li:last-child {
+    border-bottom: 0;
+}
+
+.homepage-signal-list li > span {
+    font-family: var(--gzn-font-mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--gzn-accent);
+}
+
+.homepage-signal-list strong {
+    font-weight: 650;
+    letter-spacing: -0.01em;
+}
+
+.homepage-signal-link {
+    font-weight: 600;
+    text-underline-offset: 3px;
+}
+
+.homepage-signal-link:hover {
+    color: var(--gzn-accent);
+}
+
+/* Hero metrics: hairline dividers, tighter type */
+.homepage-hero-metrics > div {
+    border-left: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.homepage-hero-metrics strong {
+    letter-spacing: -0.02em;
+}
+
+/* ---------- 3. Story cards ---------- */
+.ai-card-simple {
+    border: 1px solid transparent;
+    border-left: 4px solid;
+    border-radius: 0 16px 16px 0;
+}
+
+.ai-card-simple:hover {
+    transform: translateX(6px);
+    border-top-color: rgba(15, 23, 42, 0.06);
+    border-right-color: rgba(15, 23, 42, 0.06);
+    border-bottom-color: rgba(15, 23, 42, 0.06);
+}
+
+.ai-card-category-simple {
+    font-family: var(--gzn-font-mono);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.ai-card-title-simple {
+    font-size: 1.12rem;
+}
+
+.ai-card-excerpt-simple {
+    color: var(--gzn-muted);
+    line-height: 1.6;
+}
+
+/* Meta row: dot separators, quiet type */
+.ai-card-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px 0;
+    font-size: 0.78rem;
+    color: var(--gzn-muted);
+}
+
+.ai-card-meta > span + span::before {
+    content: '·';
+    margin: 0 8px;
+    color: #b9c0cc;
+    font-weight: 700;
+}
+
+.ai-card-meta .author-link {
+    font-weight: 600;
+    color: var(--gzn-ink-soft);
+    text-decoration: none;
+}
+
+.ai-card-meta .author-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+/* ---------- 4. Section rhythm & dividers ---------- */
+.world-news-section-title {
+    margin: clamp(40px, 6vw, 72px) auto clamp(20px, 3vw, 32px);
+    padding-top: clamp(20px, 3vw, 32px);
+    border-top: 1px solid var(--gzn-border);
+    max-width: min(100%, 1280px);
+}
+
+.world-news-section-title:first-of-type {
+    border-top: 0;
+    padding-top: 0;
+}
+
+.homepage-feed-heading {
+    margin-bottom: 22px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--gzn-ink);
+}
+
+.homepage-feed-heading h2 {
+    font-size: clamp(1.5rem, 2.6vw, 2rem);
+}
+
+.homepage-feed-link {
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Entry strip: calmer, consistent */
+.homepage-entry-strip {
+    gap: 12px;
+}
+
+.homepage-entry-strip > a {
+    border: 1px solid var(--gzn-border);
+    border-radius: 14px;
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.homepage-entry-strip > a:hover {
+    border-color: #b9c2d1;
+    transform: translateY(-2px);
+    box-shadow: var(--gzn-shadow);
+}
+
+.homepage-entry-strip strong {
+    letter-spacing: -0.01em;
+}
+
+/* ---------- 5. Dark mode consistency ---------- */
+body.dark-mode .ai-card-simple {
+    background: #16181d;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+}
+
+body.dark-mode .ai-card-simple:hover {
+    border-top-color: rgba(255, 255, 255, 0.08);
+    border-right-color: rgba(255, 255, 255, 0.08);
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode .ai-card-excerpt-simple,
+body.dark-mode .ai-card-meta {
+    color: #9aa3b2;
+}
+
+body.dark-mode .ai-card-meta > span + span::before {
+    color: #4a5261;
+}
+
+body.dark-mode .ai-card-meta .author-link {
+    color: #d4dae3;
+}
+
+body.dark-mode .world-news-section-title {
+    border-top-color: #2a2e36;
+}
+
+body.dark-mode .homepage-feed-heading {
+    border-bottom-color: #e8ecf1;
+}
+
+body.dark-mode .homepage-entry-strip > a {
+    border-color: #2a2e36;
+    background: #16181d;
+}
+
+body.dark-mode .homepage-entry-strip > a:hover {
+    border-color: #3d4350;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .homepage-signal-live i { animation: none; }
+    .ai-card-simple:hover, .homepage-entry-strip > a:hover { transform: none; }
+}
+
+/* ============ Collapsible homepage hero (details/summary disclosure) ============ */
+.homepage-hero-disclosure {
+    border: 1px solid var(--gzn-border, rgba(140, 150, 170, 0.22));
+    border-radius: var(--gzn-radius, 16px);
+    margin-bottom: 2rem;
+    background: var(--gzn-surface, rgba(255, 255, 255, 0.02));
+    overflow: hidden;
+}
+.homepage-hero-summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.85rem 1.25rem;
+    user-select: none;
+    -webkit-user-select: none;
+}
+.homepage-hero-summary::-webkit-details-marker { display: none; }
+.homepage-hero-summary::marker { content: ""; }
+.homepage-hero-summary:focus-visible {
+    outline: 2px solid var(--gzn-focus, #4d7cfe);
+    outline-offset: 2px;
+}
+.homepage-hero-summary-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--gzn-font-mono, ui-monospace, monospace);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gzn-accent-ink, #d99a2b);
+}
+.homepage-hero-summary-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--gzn-ink, inherit);
+    white-space: nowrap;
+}
+.homepage-hero-summary-chevron::after {
+    content: "\2193";
+    display: inline-block;
+    transition: transform 0.25s ease;
+    color: var(--gzn-muted, #8a93a6);
+}
+.homepage-hero-disclosure[open] .homepage-hero-summary-chevron::after {
+    transform: rotate(180deg);
+}
+.homepage-hero-disclosure[open] .homepage-hero-summary {
+    border-bottom: 1px solid var(--gzn-border, rgba(140, 150, 170, 0.22));
+}
+.homepage-hero-disclosure .homepage-hero {
+    margin-bottom: 0;
+    border-radius: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+    .homepage-hero-summary-chevron::after { transition: none; }
+}
+
+/* ============ Centered section headers + hero toggle (2026-09-26) ============ */
+.world-news-section-title {
+    text-align: center;
+}
+.world-news-section-title .homepage-keyword-intro {
+    max-width: 640px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.homepage-hero-summary {
+    justify-content: center;
+}
+/* Visually-hidden but machine-readable (AI agents, screen readers) */
+.gzn-visually-hidden {
+    position: absolute !important;
+    width: 1px; height: 1px;
+    margin: -1px; padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}

@@ -158,6 +158,18 @@ class HookServiceProvider extends ServiceProvider
                         ? $normalizeStructuredDataUrl($post->author?->url ?? null)
                         : null;
 
+                    // NewsArticle author must be the accountable human, never the AI
+                    // identity (Google guidance: do not list AI as author). The visible
+                    // byline already credits the human reviewer; schema matches it.
+                    $rawAuthorName = class_exists($post->author_type) ? (string) ($post->author?->name ?? '') : '';
+                    $isAiAuthor = in_array(strtolower(trim($rawAuthorName)), ['genzai', 'mya ai admin'], true);
+                    $schemaAuthorName = $rawAuthorName !== '' ? $rawAuthorName : 'GenZ NewZ Staff';
+                    if ($isAiAuthor) {
+                        $reviewer = app(\App\Services\EditorialProfileService::class)->reviewerForPost($post);
+                        $schemaAuthorName = $reviewer['name'] ?? $schemaAuthorName;
+                        $authorUrl = $authorUrl ?: $normalizeStructuredDataUrl(url('/our-team'));
+                    }
+
                     $schema = array_filter([
                         '@context' => 'https://schema.org',
                         '@type' => $schemaType,
@@ -174,7 +186,7 @@ class HookServiceProvider extends ServiceProvider
                         'author' => array_filter([
                             '@type' => 'Person',
                             'url' => $authorUrl,
-                            'name' => class_exists($post->author_type) ? $post->author->name : '',
+                            'name' => $schemaAuthorName,
                         ]),
                         'publisher' => [
                             '@type' => 'Organization',

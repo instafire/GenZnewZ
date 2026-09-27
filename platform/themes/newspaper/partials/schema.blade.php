@@ -129,7 +129,14 @@ $currentAiPageName = $currentRouteName && isset($aiPageNames[$currentRouteName])
 
 if (isset($post) && $post instanceof \Botble\Blog\Models\Post) {
     $authorUrl = null;
-    $authorProfile = $editorialProfileService->profileFor($post->author?->name);
+    // NewsArticle author must be the accountable human, never the AI identity
+    // (Google guidance: do not list AI as author). Visible byline already
+    // credits the human reviewer via reviewerForPost(); schema matches it.
+    $postAuthorName = strtolower(trim((string) $post->author?->name));
+    $isAiAuthor = in_array($postAuthorName, ['genzai', 'mya ai admin']);
+    $authorProfile = $isAiAuthor
+        ? $editorialProfileService->reviewerForPost($post)
+        : $editorialProfileService->profileFor($post->author?->name);
     $focusKeyword = method_exists($post, 'getMetaData') ? $post->getMetaData('focus_keyword', true) : null;
     $keywords = collect([
         $focusKeyword,
@@ -153,8 +160,8 @@ if (isset($post) && $post instanceof \Botble\Blog\Models\Post) {
         'dateModified' => optional($post->updated_at)->toIso8601String(),
         'author' => array_filter([
             '@type' => 'Person',
-            'name' => $post->author?->name ?? 'GenZ NewZ Staff',
-            'url' => $authorUrl,
+            'name' => $authorProfile['name'] ?? ($post->author?->name ?? 'GenZ NewZ Staff'),
+            'url' => $authorUrl ?: url('/our-team'),
             'jobTitle' => $authorProfile['job_title'] ?? null,
             'description' => $authorProfile['description'] ?? null,
         ]),
