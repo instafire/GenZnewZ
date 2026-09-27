@@ -1,0 +1,359 @@
+// FOB Comment Form Styling
+// Overrides Bootstrap styles for the Lara Mag theme
+
+.fob-comment-form {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f5f5f5;
+    border: 1px solid #e0e0e0;
+
+    // Apply box-sizing to all form elements
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+
+    .mb-3 {
+        margin-bottom: 15px;
+    }
+
+    // Form grid layout
+    .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0 -10px;
+    }
+
+    .col-span-1,
+    .col-span-2 {
+        padding: 0 10px;
+        margin-bottom: 15px;
+    }
+
+    .col-span-1 {
+        width: 50%;
+    }
+
+    .col-span-2 {
+        width: 100%;
+    }
+
+    // Form group styling
+    .form-group {
+        margin-bottom: 0;
+    }
+
+    // Labels
+    .form-label {
+        display: inline-block;
+        margin-bottom: 5px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+
+        &.required:after {
+            content: ' *';
+            color: $color-1st;
+        }
+    }
+
+    // Input fields
+    .form-control,
+    input.form-control,
+    textarea.form-control,
+    select.form-control {
+        display: block;
+        width: 100%;
+        max-width: 100%; // Ensure it doesn't exceed container
+        padding: 8px 12px;
+        font-size: 14px;
+        line-height: 1.5;
+        color: #495057;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        border-radius: 0;
+        transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+        outline: none;
+        box-shadow: none;
+        box-sizing: border-box; // Fix width overflow issue
+
+        &:focus {
+            border-color: $color-1st;
+            box-shadow: 0 0 0 2px rgba(170, 9, 9, 0.2); // Using fallback color
+        }
+
+        &:disabled {
+            background-color: #e9ecef;
+            opacity: 1;
+            cursor: not-allowed;
+        }
+    }
+
+    // Textarea specific
+    textarea.form-control {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    // Input placeholders
+    input::placeholder,
+    textarea::placeholder {
+        color: #999;
+        font-style: italic;
+    }
+
+    // Error messages
+    .invalid-feedback {
+        display: block;
+        margin-top: 4px;
+        font-size: 13px;
+        color: #dc3545;
+    }
+
+    .is-invalid {
+        border-color: #dc3545;
+
+        &:focus {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 1px rgba(220, 53, 69, 0.2);
+        }
+    }
+
+    // Checkbox styling
+    .form-check {
+        margin-bottom: 0;
+        padding-left: 0;
+
+        .form-check-input {
+            position: relative;
+            margin-right: 8px;
+            margin-top: 2px;
+            vertical-align: middle;
+        }
+
+        .form-check-label {
+            display: inline-block;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            user-select: none;
+        }
+    }
+
+    // Submit button
+    .btn {
+        display: inline-block;
+        font-weight: 600;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: middle;
+        user-select: none;
+        border: 1px solid transparent;
+        padding: 10px 30px;
+        font-size: 14px;
+        line-height: 1.5;
+        border-radius: 0;
+        transition: all .3s ease-in-out;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+
+        &.btn-primary {
+            color: #fff;
+            background-color: $color-1st;
+            border-color: $color-1st;
+
+            &:hover,
+            &:focus {
+                color: #fff;
+                background-color: $color-1st;
+                border-color: $color-1st;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+                opacity: 0.9;
+            }
+
+            &:active {
+                transform: translateY(1px);
+            }
+
+            &:disabled {
+                opacity: 0.65;
+                cursor: not-allowed;
+            }
+        }
+    }
+
+    // ReCAPTCHA styling
+    .g-recaptcha {
+        margin-bottom: 15px;
+    }
+
+    // Loading state
+    &.loading {
+        opacity: 0.6;
+        pointer-events: none;
+    }
+}
+
+// Comment form title
+.comment-form-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: $color-1st;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid $color-1st;
+}
+
+// Success/Error messages for comments
+.comment-form-messages {
+    .alert {
+        padding: 12px 15px;
+        margin-bottom: 20px;
+        border: 1px solid transparent;
+        border-radius: 0;
+        font-size: 14px;
+
+        &.alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+
+        &.alert-danger {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+
+        &.alert-info {
+            color: #0c5460;
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+        }
+    }
+}
+
+// Comments list styling
+.fob-comment-list {
+    margin-top: 30px;
+
+    .comment-item {
+        padding: 20px;
+        background-color: #f9f9f9;
+        border: 1px solid #e0e0e0;
+        margin-bottom: 15px;
+
+        &:hover {
+            background-color: #f5f5f5;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: $color-1st;
+            margin-bottom: 5px;
+        }
+
+        .comment-date {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 10px;
+        }
+
+        .comment-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #444;
+        }
+
+        // Nested comments
+        &.comment-reply {
+            margin-left: 30px;
+            background-color: #fff;
+        }
+    }
+}
+
+// Responsive adjustments
+@media (max-width: 767px) {
+    .fob-comment-form {
+        padding: 15px;
+
+        .col-span-1 {
+            width: 100%;
+        }
+
+        .form-row {
+            margin: 0;
+        }
+
+        .col-span-1,
+        .col-span-2 {
+            padding: 0;
+        }
+    }
+
+    .fob-comment-list {
+        .comment-item {
+            padding: 15px;
+
+            &.comment-reply {
+                margin-left: 15px;
+            }
+        }
+    }
+}
+
+// Dark mode support (if theme has dark mode)
+@media (prefers-color-scheme: dark) {
+    .dark-mode {
+        .fob-comment-form {
+            background-color: #2a2a2a;
+            border-color: #444;
+
+            .form-label {
+                color: #e0e0e0;
+            }
+
+            .form-control {
+                background-color: #333;
+                border-color: #555;
+                color: #e0e0e0;
+
+                &:focus {
+                    border-color: $color-1st;
+                    background-color: #3a3a3a;
+                }
+
+                &:disabled {
+                    background-color: #222;
+                }
+            }
+
+            .form-check-label {
+                color: #ccc;
+            }
+        }
+
+        .fob-comment-list {
+            .comment-item {
+                background-color: #2a2a2a;
+                border-color: #444;
+
+                &:hover {
+                    background-color: #333;
+                }
+
+                .comment-content {
+                    color: #e0e0e0;
+                }
+
+                &.comment-reply {
+                    background-color: #333;
+                }
+            }
+        }
+    }
+}

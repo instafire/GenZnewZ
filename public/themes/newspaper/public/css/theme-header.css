@@ -1,0 +1,912 @@
+/* Base + component styles extracted from header.blade.php (2026-09-19).
+   Loads BEFORE newspaper.css/performance.css, matching the original inline cascade. */
+
+        html {
+            overflow-x: clip;
+        }
+        
+        * {
+            margin: 0;
+            /* padding removed to match header-main */
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #fcfcfa;
+            color: #121212;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: min(calc(100% - 24px), 1170px);
+            max-width: 1170px;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+
+        /* Prevent heading clipping from legacy fixed line-height rules */
+        h1, h2, h3, h4, h5, h6 {
+            line-height: 1.22;
+            overflow: visible;
+        }
+
+        .world-news-title,
+        .section-title,
+        .category-title,
+        .nyt-page-title,
+        .gzn-static-title {
+            line-height: 1.24;
+            padding-top: 0.04em;
+            padding-bottom: 0.08em;
+        }
+
+        .breadcrumb-nav {
+            padding: 12px 0 18px;
+        }
+
+        .breadcrumb-container {
+            width: min(100%, 1170px);
+            margin: 0 auto;
+        }
+
+        .breadcrumb-list {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+            padding: 12px 16px;
+            list-style: none;
+            border: 1px solid var(--news-border);
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .breadcrumb-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+            font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            line-height: 1.4;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: #5b6472;
+        }
+
+        .breadcrumb-item::marker {
+            content: '';
+        }
+
+        .breadcrumb-item:not(:last-child)::after {
+            content: '/';
+            color: #9aa3b2;
+        }
+
+        .breadcrumb-item a {
+            color: #2f5e94;
+            text-decoration: none;
+        }
+
+        .breadcrumb-item a:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumb-item.active {
+            color: #111827;
+            font-weight: 700;
+        }
+
+        .breadcrumb-item span {
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+        
+        /* NYT-Style Header */
+        .nyt-header {
+            border-bottom: 0.5px solid #e2e2e2;
+            background: #fff;
+        }
+        
+        .header-top-bar {
+            border-bottom: 0.5px solid #e2e2e2;
+            padding: 2px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .header-date {
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.725rem;
+        }
+        
+        .header-tools {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .header-tools a {
+            color: #121212;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .header-tools a:hover {
+            color: #326891;
+        }
+        
+        .dark-mode-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 5px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .dark-mode-toggle:hover {
+            background: #f0f0f0;
+            transform: scale(1.1);
+        }
+        
+        /* Main Header with Centered Logo */
+        .header-main {
+            padding: 10px 20px 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            min-height: 78px;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+        }
+        
+        /* Centered Logo */
+        .logo-center {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            width: 116px;
+            z-index: 1;
+        }
+        
+        .genz-logo {
+            display: block;
+            text-decoration: none;
+            line-height: 0;
+            position: relative;
+            width: 116px;
+            height: 52px;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #FF006E 0%, #FB5607 25%, #FFBE0B 50%, #8338EC 75%, #3A86FF 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 800;
+            font-size: 1.6rem;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .logo-main {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+            line-height: 1;
+        }
+        
+        .logo-main .gen {
+            background: linear-gradient(135deg, #FF006E 0%, #FB5607 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .logo-main .z {
+            background: linear-gradient(135deg, #FB5607 0%, #FFBE0B 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .logo-main .new {
+            background: linear-gradient(135deg, #FFBE0B 0%, #8338EC 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .logo-main .z2 {
+            background: linear-gradient(135deg, #8338EC 0%, #3A86FF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .logo-tagline {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #666;
+            margin-top: 2px;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+            justify-content: flex-end;
+        }
+        
+        .subscribe-btn {
+            background: #121212;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .subscribe-btn:hover {
+            background: #326891;
+        }
+        
+        .login-link, .register-link {
+            font-size: 0.95rem;
+            font-weight: 500;
+            text-decoration: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        
+        .login-link {
+            color: #121212;
+        }
+        
+        .login-link:hover {
+            color: #326891;
+        }
+        
+        .register-link {
+            background: linear-gradient(135deg, #FF006E 0%, #FB5607 50%, #FFBE0B 100%);
+            color: white;
+        }
+        
+        .register-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 0, 110, 0.3);
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .user-name {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #333;
+            max-width: 100px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .logout-form {
+            margin: 0;
+        }
+        
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 0.9rem;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+        
+        .logout-btn:hover {
+            color: #FF006E;
+        }
+        
+        .admin-badge {
+            background: #121212;
+            color: white;
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 4px;
+        }
+        
+        /* Navigation Bar */
+        .header-nav {
+            border-top: 0.5px solid #e2e2e2;
+            padding: 4px 20px;
+            /* Must stay visible: a scroll container here would clip the
+               subcategory dropdowns. The menu wraps to a second line instead
+               when the beats no longer fit. */
+            overflow: visible;
+        }
+        
+        .nav-menu {
+            display: flex;
+            justify-content: center;
+            gap: 0;
+            list-style: none;
+            white-space: nowrap;
+        }
+        
+        .nav-menu li {
+            position: relative;
+        }
+        
+        .nav-menu a {
+            display: block;
+            padding: 4px 10px;
+            color: #121212;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s;
+        }
+        
+        .nav-menu a:hover {
+            color: #326891;
+            background: #f8f8f8;
+        }
+
+        /* Subcategories drop from their parent beat. `:focus-within` keeps the
+           submenu reachable by keyboard; a hover-only menu would not be. */
+        .nav-submenu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 40;
+            display: none;
+            min-width: 200px;
+            margin: 0;
+            padding: 6px 0;
+            list-style: none;
+            background: #fff;
+            border: 1px solid #e2e2e2;
+            border-radius: 8px;
+            box-shadow: 0 12px 28px rgba(16, 24, 40, 0.16);
+        }
+
+        .nav-menu-item-has-children:hover > .nav-submenu,
+        .nav-menu-item-has-children:focus-within > .nav-submenu {
+            display: block;
+        }
+
+        /* Beats sitting near the right edge open their submenu leftwards, so on a
+           wrapped nav it cannot spill past the viewport and get clipped. */
+        .nav-menu > li:nth-last-child(-n+3) > .nav-submenu {
+            left: auto;
+            right: 0;
+        }
+
+        .nav-submenu a {
+            padding: 9px 16px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-transform: none;
+            letter-spacing: 0;
+            white-space: normal;
+        }
+        
+        /* Nav Menu Toggle & Search in Header Nav */
+        .header-nav {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 0;
+            /* padding removed to match header-main */
+        }
+        
+        .nav-menu-toggle {
+            display: flex;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 3px 15px;
+            flex-direction: column;
+            gap: 5px;
+            min-width: 50px;
+            min-height: 48px;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border-right: 1px solid #e2e2e2;
+        }
+        
+        .nav-menu-toggle span {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background: #121212;
+            transition: all 0.3s;
+        }
+        
+        .nav-menu-toggle:hover span {
+            background: #326891;
+        }
+        
+        .nav-search-btn {
+            background: none;
+            border: none;
+            border-left: 1px solid #e2e2e2;
+            cursor: pointer;
+            padding: 3px 15px;
+            font-size: 1.2rem;
+            color: #121212;
+            flex-shrink: 0;
+            min-width: 50px;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: auto;
+        }
+        
+        .nav-search-btn:hover {
+            color: #326891;
+            background: #f8f8f8;
+        }
+        .header-nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            min-width: 0;
+        }
+        
+        .nav-menu {
+            display: flex;
+            justify-content: center;
+            gap: 0;
+            list-style: none;
+            white-space: normal;
+            flex-wrap: wrap;
+            row-gap: 2px;
+            flex: 1;
+            margin: 0;
+        }
+        
+        /* Mobile Menu */
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: min(88vw, 320px);
+            height: 100vh;
+            /* dvh keeps the drawer inside the visible area on mobile browsers
+               whose address bar shrinks the viewport. */
+            height: 100dvh;
+            background: #fff;
+            z-index: 9600;
+            transform: translateX(calc(-100% - 16px));
+            transition: transform 0.3s ease;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            /* The drawer is taller than the viewport, so it used to render a
+               chunky desktop-style scrollbar down its edge. Hide the scrollbar
+               but keep the scrolling (and stop the page behind it scrolling). */
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .mobile-menu::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+            display: none;
+        }
+        
+        .mobile-menu.active {
+            transform: translateX(0);
+        }
+        
+        .mobile-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 9590;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            backdrop-filter: blur(2px);
+        }
+        
+        .mobile-menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .mobile-menu-header {
+            padding: 20px;
+            border-bottom: 0.5px solid #e2e2e2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .mobile-menu-close {
+            background: none;
+            border: none;
+            font-size: 1.6rem;
+            cursor: pointer;
+            color: #121212;
+        }
+        
+        .mobile-menu-list {
+            list-style: none;
+            /* padding removed to match header-main */
+        }
+        
+        .mobile-menu-list a {
+            display: block;
+            padding: 18px 20px;
+            color: #121212;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 500;
+            border-bottom: 0.5px solid #f0f0f0;
+            min-height: 56px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .mobile-menu-list a:hover {
+            background: #f8f8f8;
+            color: #326891;
+        }
+
+        /* Subcategories in the drawer open as native accordions, so touch users
+           can reach them without a hover state. */
+        .mobile-menu-group-summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 18px 20px;
+            min-height: 56px;
+            color: #121212;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 0.5px solid #f0f0f0;
+            list-style: none;
+        }
+
+        .mobile-menu-group-summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .mobile-menu-group-summary::marker {
+            content: "";
+        }
+
+        .mobile-menu-group[open] > .mobile-menu-group-summary {
+            background: #f8f8f8;
+            color: #326891;
+        }
+
+        .mobile-menu-group-caret {
+            color: #666;
+            transition: transform 0.2s ease;
+        }
+
+        .mobile-menu-group[open] .mobile-menu-group-caret {
+            transform: rotate(180deg);
+        }
+
+        .mobile-menu-submenu {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            background: #fafafa;
+        }
+
+        /* Indent children so the hierarchy reads at a glance. */
+        .mobile-menu-submenu a {
+            padding-left: 34px;
+            font-size: 1rem;
+        }
+        
+        /* Search Overlay */
+        .search-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.98);
+            z-index: 9700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            padding: 24px;
+        }
+        
+        .search-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .search-container {
+            width: 90%;
+            max-width: 700px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 20px 0;
+            font-size: 2.1rem;
+            font-family: 'Space Grotesk', sans-serif;
+            border: none;
+            border-bottom: 3px solid #121212;
+            background: transparent;
+            outline: none;
+        }
+        
+        .search-input::placeholder {
+            color: #999;
+        }
+        
+        .search-close {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: none;
+            border: none;
+            font-size: 2.1rem;
+            cursor: pointer;
+            color: #121212;
+        }
+
+        /* GenZ NewZ logo block */
+        .gzn-logo {
+            --gzn-scale: 0.232;
+            display: flex;
+            border: 8px solid #000;
+            background: #000;
+            transform: rotate(-3deg) scale(var(--gzn-scale));
+            transform-origin: top left;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-family: "Arial Black", Impact, sans-serif;
+            width: 500px;
+            height: 220px;
+            box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.12);
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .gzn-left {
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+        }
+
+        .gzn-gen {
+            background: #fff;
+            height: 140px;
+            border-bottom: 4px solid #000;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gzn-gen-text {
+            font-size: 105px;
+            font-weight: 900;
+            color: #000;
+            letter-spacing: -6px;
+            line-height: 1;
+            transform: scaleX(0.9);
+            margin-right: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .gzn-curve {
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #000;
+            z-index: 1;
+        }
+
+        .gzn-newz-bar {
+            background: #000;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            border-top: 4px solid #000;
+        }
+
+        .gzn-marquee {
+            display: flex;
+            white-space: nowrap;
+            animation: gzn-scroll-right 8s linear infinite;
+        }
+
+        .gzn-newz-outline,
+        .gzn-newz-solid {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 70px;
+            letter-spacing: 4px;
+            line-height: 1;
+            margin-right: 40px;
+        }
+
+        .gzn-newz-outline {
+            color: transparent;
+            -webkit-text-stroke: 1.5px #fff;
+            text-stroke: 1.5px #fff;
+        }
+
+        .gzn-newz-solid {
+            color: #fff;
+        }
+
+        .gzn-right {
+            background: #2E5CFF;
+            width: 200px;
+            height: 220px;
+            border-left: 8px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gzn-z-text {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 240px;
+            color: #fff;
+            line-height: 0.85;
+            transform: translateY(10px);
+        }
+
+        @keyframes gzn-scroll-right {
+            0% { transform: translateX(-50%); }
+            100% { transform: translateX(0%); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-top-bar {
+                display: none;
+            }
+            
+            .logo-text {
+                display: none;
+            }
+            
+            .header-main {
+                padding: 8px 15px 6px;
+                min-height: 64px;
+            }
+
+            .header-left,
+            .header-right {
+                display: none;
+            }
+
+            .logo-center {
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 96px;
+                display: block;
+            }
+            
+            .header-nav {
+                padding: 0;
+                justify-content: space-between;
+                overflow-x: clip;
+            }
+            
+            .nav-menu {
+                display: none;
+            }
+
+            .nav-menu-toggle,
+            .nav-search-btn {
+                min-width: 48px;
+                width: 48px;
+                padding-left: 12px;
+                padding-right: 12px;
+            }
+            
+            .subscribe-btn {
+                padding: 8px 14px;
+                font-size: 0.95rem;
+            }
+
+            .gzn-logo {
+                --gzn-scale: 0.19;
+                box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.1);
+            }
+        }
+
+        @media (max-width: 590px) {
+            .container {
+                width: calc(100% - 24px);
+            }
+
+            .breadcrumb-nav {
+                padding: 10px 0 14px;
+            }
+
+            .breadcrumb-list {
+                padding: 10px 12px;
+                gap: 6px;
+            }
+
+            .breadcrumb-item {
+                font-size: 0.66rem;
+                letter-spacing: 0.04em;
+            }
+        }

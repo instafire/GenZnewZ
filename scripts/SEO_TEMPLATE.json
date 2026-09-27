@@ -1,0 +1,177 @@
+{
+  "_comment": "SEO CONTENT TEMPLATE FOR GENZ NEWZ - Fill this out BEFORE creating any article",
+  "article_metadata": {
+    "topic": "Article topic/title idea",
+    "focus_keyword": "Primary search term (NO SLANG)",
+    "secondary_keywords": [
+      "Related keyword 1",
+      "Related keyword 2",
+      "Related keyword 3"
+    ],
+    "target_word_count": 500,
+    "category_ids": [33, 10],
+    "format_type": "text-only"
+  },
+  "seo_requirements": {
+    "seo_title": {
+      "max_length": 60,
+      "example": "Gen Z TV Review: Is the $6.99/Year Subscription Worth It?",
+      "rules": [
+        "Must contain focus keyword",
+        "No excessive emojis",
+        "Boring but descriptive"
+      ]
+    },
+    "meta_description": {
+      "max_length": 160,
+      "example": "Gen Z TV offers streaming for $6.99/year. Discover if this budget-friendly service is worth the hype for young viewers in 2026.",
+      "rules": [
+        "Focus keyword in first 100 chars",
+        "Include action word + benefit",
+        "Compelling but accurate"
+      ]
+    },
+    "slug": {
+      "example": "gen-z-tv-review-699-subscription-worth-it",
+      "rules": [
+        "Lowercase with hyphens",
+        "Include focus keyword",
+        "No dates or slang"
+      ]
+    },
+    "image_alt_text": {
+      "example": "Gen Z TV streaming app interface showing movie selection on mobile device",
+      "rules": [
+        "5-10 words descriptive",
+        "Include focus keyword",
+        "Describe actual image content"
+      ]
+    }
+  },
+  "content_structure": {
+    "h1": "ONLY ONE - CMS adds from title (DO NOT INCLUDE IN CONTENT)",
+    "h2_headings": [
+      {
+        "title": "What is [Topic]?",
+        "contains_keyword": true
+      },
+      {
+        "title": "Key Features and Benefits",
+        "contains_keyword": false
+      },
+      {
+        "title": "Pricing and Availability",
+        "contains_keyword": false
+      },
+      {
+        "title": "Final Verdict",
+        "contains_keyword": false
+      }
+    ],
+    "paragraph_rules": [
+      "2-3 sentences maximum per paragraph",
+      "Focus keyword in first paragraph",
+      "Short sentences for mobile readability"
+    ],
+    "lists": {
+      "use_bullets": true,
+      "use_numbered": true,
+      "minimum_per_article": 1
+    }
+  },
+  "linking_strategy": {
+    "internal_links": [
+      {
+        "anchor_text": "Descriptive anchor (NOT 'click here')",
+        "target_url": "https://genznewz.com/related-article",
+        "placement": "First or second paragraph"
+      },
+      {
+        "anchor_text": "Another descriptive link",
+        "target_url": "https://genznewz.com/category-page",
+        "placement": "Middle section"
+      }
+    ],
+    "external_links": [
+      {
+        "anchor_text": "Authority source mention",
+        "target_url": "https://reuters.com/example",
+        "source_type": "News/Gov/Academic"
+      }
+    ]
+  },
+  "validation_checklist": {
+    "before_submission": [
+      "☐ seo_title is 50-60 characters",
+      "☐ meta_description is 150-160 characters",
+      "☐ slug contains focus keyword (no slang)",
+      "☐ focus_keyword has NO slang",
+      "☐ First paragraph includes focus keyword",
+      "☐ At least one H2 contains focus keyword",
+      "☐ All H2s are descriptive (no slang-only)",
+      "☐ 2-3 internal links included",
+      "☐ 1-2 external authority links included",
+      "☐ Image alt text written (if using images)",
+      "☐ Current year (2026) referenced where relevant",
+      "☐ Content is 150+ words minimum",
+      "☐ Paragraphs are 2-3 sentences max",
+      "☐ NO H1 tags in content (CMS adds automatically)"
+    ]
+  },
+  "example_output": {
+    "seo_json": {
+      "seo_title": "AI Art Tools 2026: Top 5 Apps Gen Z Artists Love",
+      "meta_description": "Discover the top 5 AI art tools revolutionizing creativity for Gen Z artists in 2026. From Midjourney to DALL-E, explore features and pricing.",
+      "slug": "ai-art-tools-2026-top-5-gen-z",
+      "focus_keyword": "AI art tools 2026",
+      "image_alt_text": "Gen Z artist using AI art generation software on digital tablet",
+      "content_improvements": {
+        "h1_status": "PASS - CMS handles H1",
+        "h2_suggestions": [],
+        "internal_linking_opportunities": [
+          "Link to /category/ai-news in intro",
+          "Link to /creative-industries article"
+        ],
+        "keyword_placement": "Focus keyword in first paragraph, H2, and meta"
+      },
+      "validation_passed": true
+    },
+    "api_request": {
+      "title": "AI Art Tools 2026: Top 5 Apps Gen Z Artists Love",
+      "description": "Discover the top 5 AI art tools revolutionizing creativity for Gen Z artists in 2026. From Midjourney to DALL-E, explore features and pricing.",
+      "content": "<p>Artificial intelligence has transformed how Gen Z creates art. <strong>AI art tools in 2026</strong> offer unprecedented creative possibilities.</p>\n\n<h2>1. Midjourney: The Artist's Choice</h2>\n<p>Midjourney dominates the <a href='https://genznewz.com/ai-news'>AI landscape</a> in 2026 with photorealistic rendering.</p>\n\n<h2>2. DALL-E 3: OpenAI's Powerhouse</h2>\n<p>DALL-E 3 excels at conceptual artwork and collaborative workspaces.</p>\n\n<h2>Conclusion</h2>\n<p>These tools amplify creativity. Check our <a href='https://genznewz.com/creative-guide'>creative guide</a> for more.</p>",
+      "category_ids": [33, 7, 10],
+      "format_type": "default",
+      "is_featured": true,
+      "author_id": 14
+    }
+  },
+  "category_quick_reference": {
+    "AI_News": {"id": 33, "keywords": ["artificial intelligence", "machine learning", "AI tools"]},
+    "Tech_Games": {"id": 10, "keywords": ["technology", "gaming", "software"]},
+    "Crypto": {"id": 29, "keywords": ["cryptocurrency", "bitcoin", "blockchain"]},
+    "Culture": {"id": 7, "keywords": ["trends", "Gen Z", "pop culture"]},
+    "Politics": {"id": 45, "keywords": ["politics", "policy", "government"]},
+    "Business": {"id": 69, "keywords": ["business", "economy", "markets"]},
+    "Science": {"id": 70, "keywords": ["science", "research", "discoveries"]},
+    "Health": {"id": 71, "keywords": ["health", "wellness", "medical"]}
+  },
+  "common_mistakes": {
+    "titles": {
+      "bad": "🔥 You Won't BELIEVE What Just Happened!!! 🤯🤯🤯",
+      "good": "Bitcoin Price Surge: What's Driving the 2026 Rally?"
+    },
+    "descriptions": {
+      "bad": "This is an article about stuff. Read it now!",
+      "good": "Bitcoin prices surged 20% in January 2026. Discover the key factors driving this cryptocurrency rally and what experts predict next."
+    },
+    "headings": {
+      "bad": "It's Giving Drama",
+      "good": "The Drama: Regulatory Issues Explained"
+    },
+    "keywords": {
+      "bad": "crypto vibes, best skincare FR, ai slay",
+      "good": "cryptocurrency trends, best skincare products, artificial intelligence tools"
+    }
+  }
+}

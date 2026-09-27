@@ -1,0 +1,72 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # Exclude ai-automation folder from Laravel routing
+    RewriteRule ^ai-automation/ - [L]
+
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Handle X-XSRF-Token Header
+    RewriteCond %{HTTP:x-xsrf-token} .
+    RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
+
+    # Redirect Trailing Slashes If Not A Folder...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+    # Send Requests To Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+# Cache static assets
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/webp "access plus 6 months"
+  ExpiresByType image/avif "access plus 6 months"
+  ExpiresByType image/jpeg "access plus 6 months"
+  ExpiresByType image/png "access plus 6 months"
+  ExpiresByType image/gif "access plus 6 months"
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+  ExpiresByType text/javascript "access plus 1 month"
+  ExpiresByType font/woff2 "access plus 1 year"
+</IfModule>
+
+# Compress text assets (HTML, CSS, JS, JSON, XML feeds/sitemaps, SVG, fonts).
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml
+  AddOutputFilterByType DEFLATE application/javascript text/javascript application/json
+  AddOutputFilterByType DEFLATE application/xml application/rss+xml
+  AddOutputFilterByType DEFLATE image/svg+xml font/ttf font/otf application/font-woff
+</IfModule>
+
+# Security headers with CSP
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+  Header set X-Frame-Options "SAMEORIGIN"
+  Header set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+
+  # Content-Security-Policy must list every script/style/frame origin the site
+  # actually embeds, or the browser silently blocks it. Verified against the
+  # third parties loaded in header/footer partials:
+  #   googletagmanager.com  GTM loader (script) + noscript iframe (frame)
+  #   google-analytics.com  GA4 (script + connect)
+  #   adsbygoogle           AdSense (script + frame + connect)
+  #   clarity.ms            Microsoft Clarity (script + connect)
+  #   doubleclick.net       AdSense ad frames/beacons (frame + connect + img)
+  #   googleadservices.com  AdSense conversions (connect + img)
+  #   google.com/googleapis.com/gstatic.com  reCAPTCHA, fonts, syndication
+  # Without 'unsafe-eval' some third-party bundles (Clarity, AdSense) fail, so it
+  # is kept. 'unsafe-inline' is required by inline GTM/GA snippet blocks.
+  Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://www.googletagmanager.com https://www.google-analytics.com https://pagead2.googlesyndication.com https://www.clarity.ms https://www.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://adservice.google.com https://fundingchoicesmessages.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; img-src 'self' data: blob: https: http:; media-src 'self' https:; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://www.clarity.ms https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://fundingchoicesmessages.google.com https://ep1.adtrafficquality.google https://ep2.adtrafficquality.google; frame-src 'self' https://www.googletagmanager.com https://www.google.com https://googleads.g.doubleclick.net https://www.youtube.com https://www.youtube-nocookie.com https://td.doubleclick.net; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+</IfModule>

@@ -1,0 +1,11 @@
+{
+    "id": "botble/note",
+    "name": "Note",
+    "namespace": "Botble\\Note\\",
+    "provider": "Botble\\Note\\Providers\\NoteServiceProvider",
+    "author": "Botble Technologies",
+    "url": "https://botble.com",
+    "version": "2.0.6",
+    "description": "Allow to add note when editing page, post...",
+    "minimum_core_version": "7.3.0"
+}

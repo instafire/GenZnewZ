@@ -1,0 +1,32 @@
+/* Author Badge Header Layouts */
+.ai-card-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.featured-header-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.article-header-badges {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+/* Ensure category badge and author badge align nicely */
+.ai-card-category-simple,
+.featured-category,
+.article-category {
+    flex-shrink: 0;
+}

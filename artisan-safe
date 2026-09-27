@@ -1,0 +1,19 @@
+#!/bin/bash
+# Safe Artisan Command Runner
+# Usage: ./artisan-safe [command]
+# Example: ./artisan-safe cache:clear
+
+cd /home/genznewz/htdocs/genznewz.com
+
+# Check if running as root
+if [ "$(id -u)" = "0" ]; then
+    # Run as genznewz user
+    sudo -u genznewz php artisan "$@"
+    
+    # Fix any permission issues that may have been created
+    chown -R genznewz:genznewz storage/ bootstrap/cache 2>/dev/null
+    chmod -R 775 storage/ bootstrap/cache 2>/dev/null
+else
+    # Already running as non-root, just run normally
+    php artisan "$@"
+fi

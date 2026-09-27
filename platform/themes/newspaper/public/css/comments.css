@@ -1,0 +1,651 @@
+/* comments.css
+ * Extracted from the inline <style> block in partials/comments.blade.php (2026-09).
+ * Registered from the partial with deps [theme-dark-css] so it loads after
+ * every head stylesheet, matching the original in-body inline position.
+ */
+
+        /* NYT Comments Section - Compact Size */
+        .nyt-comments-section {
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 0 15px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        /* Header */
+        .nyt-comments-header {
+            border-bottom: 2px solid #121212;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        .nyt-comments-header-main {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .nyt-comments-title {
+            font-family: Georgia, serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #121212;
+            margin: 0;
+        }
+
+        .nyt-comments-count {
+            color: #666;
+            font-weight: 400;
+        }
+
+        .nyt-comments-tabs {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nyt-tab {
+            background: none;
+            border: none;
+            padding: 6px 0;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #666;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.2s;
+        }
+
+        .nyt-tab:hover {
+            color: #121212;
+        }
+
+        .nyt-tab--active {
+            color: #121212;
+            font-weight: 600;
+        }
+
+        .nyt-tab--active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #121212;
+        }
+
+        .nyt-comments-sort {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .nyt-comments-sort select {
+            border: 1px solid #e1e1e1;
+            border-radius: 4px;
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        /* Comments List - AT TOP NOW */
+        .nyt-comments-list-container {
+            margin-bottom: 25px;
+        }
+
+        .nyt-comment-card {
+            display: flex;
+            gap: 12px;
+            padding: 16px 0;
+            border-bottom: 1px solid #e8e8e8;
+            transition: background 0.2s;
+        }
+
+        .nyt-comment-card:last-child {
+            border-bottom: none;
+        }
+
+        .nyt-comment-card:hover {
+            background: #fafafa;
+            margin: 0 -10px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .nyt-comment--hidden {
+            display: none;
+        }
+
+        .nyt-comment--reader-pick {
+            background: linear-gradient(to right, #f8fafc 0%, transparent 100%);
+        }
+
+        /* Avatar */
+        .nyt-comment-avatar {
+            width: 32px;
+            height: 32px;
+            background: #999;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        /* Content */
+        .nyt-comment-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .nyt-comment-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 6px;
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        .nyt-comment-author {
+            font-weight: 600;
+            color: #121212;
+            font-size: 0.85rem;
+        }
+
+        .nyt-comment-date::before {
+            content: '·';
+            margin-right: 6px;
+            color: #ccc;
+        }
+
+        .nyt-comment-body {
+            font-family: Georgia, serif;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .nyt-comment-body p {
+            margin: 0;
+        }
+
+        /* Actions */
+        .nyt-comment-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .nyt-action-btn {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: none;
+            border: none;
+            padding: 4px 0;
+            font-size: 0.75rem;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nyt-action-btn:hover {
+            color: #121212;
+        }
+
+        .nyt-comment-pick-badge {
+            display: inline-block;
+            padding: 1px 7px;
+            border-radius: 999px;
+            background: #e8f1fb;
+            color: #23547a;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        /* Replies */
+        .nyt-comment-replies {
+            margin-top: 12px;
+            padding-left: 16px;
+            border-left: 2px solid #e8e8e8;
+        }
+
+        .nyt-reply-card {
+            display: flex;
+            gap: 10px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .nyt-reply-card:last-child {
+            border-bottom: none;
+        }
+
+        .nyt-reply-avatar {
+            width: 28px;
+            height: 28px;
+            background: #bbb;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .nyt-reply-content {
+            flex: 1;
+        }
+
+        .nyt-reply-meta {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .nyt-reply-author {
+            font-weight: 600;
+            color: #121212;
+        }
+
+        .nyt-reply-body {
+            font-family: Georgia, serif;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: #333;
+        }
+
+        /* Load More */
+        .nyt-comments-load-more {
+            padding: 16px 0;
+            text-align: center;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .nyt-load-more-btn {
+            background: #121212;
+            border: 2px solid #121212;
+            padding: 12px 28px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nyt-load-more-btn:hover {
+            background: #fff;
+            color: #121212;
+        }
+
+        /* Empty State */
+        .nyt-comments-empty {
+            padding: 30px 20px;
+            text-align: center;
+            color: #666;
+            font-family: Georgia, serif;
+            font-style: italic;
+            font-size: 0.95rem;
+        }
+
+        /* Comment Form - AT BOTTOM NOW */
+        .nyt-comment-form-section {
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            padding: 20px;
+        }
+
+        .nyt-comment-form-card {
+            max-width: 100%;
+        }
+
+        .nyt-form-title {
+            font-family: Georgia, serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #121212;
+            margin: 0 0 4px 0;
+        }
+
+        .nyt-form-subtitle {
+            color: #888;
+            font-size: 0.8rem;
+            margin: 0 0 16px 0;
+        }
+
+        /* Override form styles */
+        .nyt-comment-form-card .fob-comment-form {
+            display: grid;
+            gap: 12px;
+        }
+
+        .nyt-comment-form-card .form-group {
+            margin-bottom: 0;
+        }
+
+        .nyt-comment-form-card .form-label {
+            font-weight: 600;
+            color: #121212;
+            font-size: 0.8rem;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .nyt-comment-form-card .form-control,
+        .nyt-comment-form-card input[type="text"],
+        .nyt-comment-form-card input[type="email"],
+        .nyt-comment-form-card textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+            background: #fff;
+            color: #121212;
+        }
+
+        .nyt-comment-form-card .form-control:focus,
+        .nyt-comment-form-card input:focus,
+        .nyt-comment-form-card textarea:focus {
+            outline: none;
+            border-color: #326891;
+            box-shadow: 0 0 0 3px rgba(50, 104, 145, 0.1);
+        }
+
+        .nyt-comment-form-card textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .nyt-comment-form-card .btn-primary {
+            background: #121212;
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+            width: auto;
+        }
+
+        .nyt-comment-form-card .btn-primary:hover {
+            background: #326891;
+        }
+
+        /* Cookie consent text - smaller size */
+        .nyt-comment-form-card .form-check {
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        .nyt-comment-form-card .form-check-input {
+            width: 14px;
+            height: 14px;
+        }
+
+        .nyt-comment-form-card .form-check-label {
+            font-size: 0.75rem;
+            font-weight: 400;
+            color: #666;
+        }
+
+        /* Dark Mode Support */
+        body.dark-mode .nyt-comments-section {
+            background: transparent;
+        }
+
+        body.dark-mode .nyt-comments-header {
+            border-bottom-color: #444;
+        }
+
+        body.dark-mode .nyt-comments-title {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .nyt-comments-count {
+            color: #888;
+        }
+
+        body.dark-mode .nyt-tab {
+            color: #888;
+        }
+
+        body.dark-mode .nyt-tab:hover {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .nyt-tab--active {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .nyt-tab--active::after {
+            background: #e0e0e0;
+        }
+
+        body.dark-mode .nyt-comments-sort {
+            color: #888;
+        }
+
+        body.dark-mode .nyt-comments-sort select {
+            background: #2a2a2a;
+            border-color: #444;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .nyt-comment-card {
+            border-bottom-color: #333;
+        }
+
+        body.dark-mode .nyt-comment-card:hover {
+            background: #1a1a1a;
+        }
+
+        body.dark-mode .nyt-comment-avatar {
+            background: #444;
+        }
+
+        body.dark-mode .nyt-comment-author {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .nyt-comment-date {
+            color: #888;
+        }
+
+        body.dark-mode .nyt-comment-body {
+            color: #ccc;
+        }
+
+        body.dark-mode .nyt-action-btn {
+            color: #888;
+        }
+
+        body.dark-mode .nyt-action-btn:hover {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .nyt-comment-pick-badge {
+            background: #1d4ed8;
+            color: #e8f1fb;
+        }
+
+        body.dark-mode .nyt-comment-replies {
+            border-left-color: #333;
+        }
+
+        body.dark-mode .nyt-reply-card {
+            border-bottom-color: #2a2a2a;
+        }
+
+        body.dark-mode .nyt-reply-avatar {
+            background: #444;
+        }
+
+        body.dark-mode .nyt-reply-author {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .nyt-reply-body {
+            color: #ccc;
+        }
+
+        body.dark-mode .nyt-load-more-btn {
+            background: #e0e0e0;
+            border-color: #e0e0e0;
+            color: #121212;
+        }
+
+        body.dark-mode .nyt-load-more-btn:hover {
+            background: #121212;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .nyt-comment-form-section {
+            background: #1a1a1a;
+            border-color: #333;
+        }
+
+        body.dark-mode .nyt-comment-form-card,
+        body.dark-mode .nyt-comment-form-card .fob-comment-form,
+        body.dark-mode .nyt-comment-form-card .row,
+        body.dark-mode .nyt-comment-form-card [class*="col-"],
+        body.dark-mode .nyt-comment-form-card .mb-3.position-relative {
+            background: transparent !important;
+            border-color: transparent;
+        }
+
+        body.dark-mode .nyt-form-title {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .nyt-form-subtitle {
+            color: #888;
+        }
+
+        body.dark-mode .nyt-comment-form-card .form-label {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .nyt-comment-form-card .form-control,
+        body.dark-mode .nyt-comment-form-card input,
+        body.dark-mode .nyt-comment-form-card textarea {
+            background: #2a2a2a;
+            border-color: #444;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .nyt-comment-form-card .form-control::placeholder,
+        body.dark-mode .nyt-comment-form-card input::placeholder,
+        body.dark-mode .nyt-comment-form-card textarea::placeholder {
+            color: #9ca3af;
+            opacity: 1;
+        }
+
+        body.dark-mode .nyt-comment-form-card input:-webkit-autofill,
+        body.dark-mode .nyt-comment-form-card input:-webkit-autofill:hover,
+        body.dark-mode .nyt-comment-form-card input:-webkit-autofill:focus,
+        body.dark-mode .nyt-comment-form-card textarea:-webkit-autofill,
+        body.dark-mode .nyt-comment-form-card textarea:-webkit-autofill:hover,
+        body.dark-mode .nyt-comment-form-card textarea:-webkit-autofill:focus {
+            -webkit-text-fill-color: #e0e0e0;
+            -webkit-box-shadow: 0 0 0 1000px #2a2a2a inset;
+            transition: background-color 9999s ease-out 0s;
+        }
+
+        body.dark-mode .nyt-comment-form-card .form-control:focus,
+        body.dark-mode .nyt-comment-form-card input:focus,
+        body.dark-mode .nyt-comment-form-card textarea:focus {
+            border-color: #5a9fd4;
+            box-shadow: 0 0 0 3px rgba(90, 159, 212, 0.2);
+        }
+
+        body.dark-mode .nyt-comment-form-card .form-check-input {
+            background-color: #1f1f1f;
+            border-color: #4b5563;
+        }
+
+        body.dark-mode .nyt-comment-form-card .form-check-input:checked {
+            background-color: #5a9fd4;
+            border-color: #5a9fd4;
+        }
+
+        body.dark-mode .nyt-comment-form-card .form-check-input:focus {
+            box-shadow: 0 0 0 3px rgba(90, 159, 212, 0.2);
+        }
+
+        body.dark-mode .nyt-comment-form-card .btn-primary {
+            background: #5a9fd4;
+            border-color: #5a9fd4;
+            color: #fff;
+        }
+
+        body.dark-mode .nyt-comment-form-card .btn-primary:hover {
+            background: #4c8cbc;
+            border-color: #4c8cbc;
+            color: #fff;
+        }
+
+        body.dark-mode .nyt-comment-form-card .form-check {
+            color: #888;
+        }
+
+        body.dark-mode .nyt-comment-form-card .form-check-label {
+            color: #888;
+        }
+
+        body.dark-mode .nyt-comments-empty {
+            color: #888;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nyt-comments-section {
+                margin: 30px auto;
+                padding: 0 12px;
+            }
+
+            .nyt-comments-title {
+                font-size: 1.2rem;
+            }
+
+            .nyt-comments-header-main {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .nyt-comment-card {
+                padding: 14px 0;
+            }
+
+            .nyt-comment-form-section {
+                padding: 16px;
+            }
+        }

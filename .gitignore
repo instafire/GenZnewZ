@@ -1,0 +1,15 @@
+/vendor/
+/node_modules/
+/.env
+/.env.backup.*
+/storage/app/*
+/storage/backups/*
+/storage/logs/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+!/storage/app/.gitignore
+/public/.well-known/
+*.tar.gz
+.DS_Store
+.phpunit.cache/

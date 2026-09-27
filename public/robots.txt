@@ -1,0 +1,59 @@
+# robots.txt for https://genznewz.com
+# ---------------------------------------------------------------
+# Machine-readable map of this site: https://genznewz.com/llms.txt
+# Agent-facing sitemap:             https://genznewz.com/sitemap-ai.xml
+# Publishing contract:              https://genznewz.com/AI_INSTRUCTIONS.md
+# Automation API spec (OpenAPI):    https://genznewz.com/openapi.json
+# Automation API status:            https://genznewz.com/api/v1/automation/status
+# Feeds (RSS 2.0 / JSON Feed 1.1):  https://genznewz.com/feed
+#                                   https://genznewz.com/feed.json
+# ---------------------------------------------------------------
+
+# AI agents and answer engines.
+# GenZ NewZ is AI-native and explicitly welcomes agent crawlers for public
+# editorial content. Repeated user-agent lines below form a single group.
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-User
+User-agent: Claude-SearchBot
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: Amazonbot
+User-agent: meta-externalagent
+User-agent: cohere-ai
+User-agent: DuckAssistBot
+User-agent: YouBot
+User-agent: Bytespider
+Allow: /
+Allow: /api/v1/automation/
+Disallow: /admin/
+
+# Everyone else.
+User-agent: *
+Allow: /
+# The automation API is the documented, agent-facing surface, so it stays
+# crawlable even though the rest of /api/ is not.
+Allow: /api/v1/automation/
+
+# Keep truly private endpoints out of crawl.
+Disallow: /admin/
+Disallow: /api/
+
+# Public search/auth pages use meta robots so crawlers can fetch and honor noindex.
+
+Sitemap: https://genznewz.com/sitemap.xml
+Sitemap: https://genznewz.com/sitemap-posts.xml
+Sitemap: https://genznewz.com/sitemap-pages.xml
+Sitemap: https://genznewz.com/sitemap-ai.xml
+# Google News sitemap: articles from the last 48 hours only.
+Sitemap: https://genznewz.com/news-sitemap.xml
+
+# RSS 2.0 is a supported sitemap format; the JSON Feed is not, and is
+# advertised in llms.txt and via <link rel="alternate"> instead.
+Sitemap: https://genznewz.com/feed
+
+Host: genznewz.com

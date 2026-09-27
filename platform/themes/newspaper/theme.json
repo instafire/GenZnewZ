@@ -1,0 +1,14 @@
+{
+    "name": "Newspaper",
+    "namespace": "Theme\\Newspaper\\",
+    "description": "NYT inspired newspaper theme with AI Text section",
+    "author": "GenZNewz",
+    "required_plugins": [
+        "blog",
+        "contact",
+        "language"
+    ],
+    "providers": [
+        "Theme\\Newspaper\\Providers\\ThemeServiceProvider"
+    ]
+}

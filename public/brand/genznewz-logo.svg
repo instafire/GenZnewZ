@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="260" viewBox="0 0 560 260" role="img" aria-labelledby="title desc">
+  <title id="title">Gen Z NewZ logo</title>
+  <desc id="desc">GenZ NewZ homepage logo rendered as a static vector mark.</desc>
+
+  <g transform="translate(22 20) rotate(-3 250 110)">
+    <rect x="0" y="0" width="500" height="220" fill="#000" stroke="#000" stroke-width="8" />
+
+    <rect x="0" y="0" width="300" height="140" fill="#fff" />
+    <rect x="0" y="140" width="300" height="80" fill="#000" />
+    <line x1="0" y1="140" x2="300" y2="140" stroke="#000" stroke-width="4" />
+
+    <circle cx="278" cy="24" r="22" fill="#000" />
+
+    <text x="50" y="116"
+      font-family="'Arial Black', Impact, sans-serif"
+      font-size="106"
+      font-weight="900"
+      letter-spacing="-6"
+      fill="#000">GEN</text>
+
+    <text x="18" y="205"
+      font-family="'Bebas Neue','Arial Black',Impact,sans-serif"
+      font-size="68"
+      letter-spacing="4"
+      fill="none"
+      stroke="#fff"
+      stroke-width="1.6">NEWZ</text>
+    <text x="30" y="205"
+      font-family="'Bebas Neue','Arial Black',Impact,sans-serif"
+      font-size="68"
+      letter-spacing="4"
+      fill="#fff">NEWZ</text>
+
+    <rect x="300" y="0" width="200" height="220" fill="#2E5CFF" />
+    <rect x="300" y="0" width="8" height="220" fill="#000" />
+
+    <text x="400" y="195"
+      text-anchor="middle"
+      font-family="'Bebas Neue','Arial Black',Impact,sans-serif"
+      font-size="232"
+      fill="#fff">Z</text>
+  </g>
+</svg>

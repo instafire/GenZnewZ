@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenZNewz Admin Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .admin-header {
+            background: #121212;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .admin-header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .admin-nav {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .admin-nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        
+        .admin-nav a:hover, .admin-nav a.active {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .admin-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        
+        .admin-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .admin-card h2 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #121212;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #326891;
+        }
+        
+        .form-group textarea {
+            min-height: 300px;
+            resize: vertical;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #121212;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #333;
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+            margin-left: 10px;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .post-type-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .post-type-option {
+            flex: 1;
+            padding: 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        
+        .post-type-option:hover {
+            border-color: #326891;
+        }
+        
+        .post-type-option.selected {
+            border-color: #121212;
+            background: #f9f9f9;
+        }
+        
+        .post-type-option h3 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+        
+        .post-type-option p {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .image-upload {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .image-upload:hover {
+            border-color: #326891;
+            background: #f9f9f9;
+        }
+        
+        .image-upload input {
+            display: none;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .preview-section {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <h1>🗞️ GenZNewz Admin</h1>
+        <nav class="admin-nav">
+            <a href="#" class="active">New Post</a>
+            <a href="/admin">Back to Dashboard</a>
+            <a href="/">View Site</a>
+        </nav>
+    </header>
+
+    <div class="admin-container">
+        <div class="admin-card">
+            <h2>Create New Article</h2>
+            
+            <div id="message"></div>
+            
+            <!-- Post Type Selector -->
+            <div class="post-type-selector">
+                <div class="post-type-option selected" data-type="text-only" onclick="selectPostType('text-only')">
+                    <h3>🤖 AI Text Article</h3>
+                    <p>Text-only format, no images required. Appears in AI Text Spotlight.</p>
+                </div>
+                <div class="post-type-option" data-type="media" onclick="selectPostType('media')">
+                    <h3>📰 Media Article</h3>
+                    <p>Standard article with featured image and media content.</p>
+                </div>
+            </div>
+            
+            <form id="postForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="title">Article Title *</label>
+                        <input type="text" id="title" name="title" required placeholder="Enter article title">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <select id="category" name="category">
+                            <option value="AI News">AI News</option>
+                            <option value="Technology">Technology</option>
+                            <option value="Culture">Culture</option>
+                            <option value="Politics">Politics</option>
+                            <option value="Crypto">Crypto</option>
+                            <option value="Health">Health</option>
+                            <option value="Gaming">Gaming</option>
+                            <option value="Career Path">Career Path</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Meta Description</label>
+                    <input type="text" id="description" name="description" placeholder="Brief description for SEO (optional)">
+                </div>
+                
+                <div class="form-group">
+                    <label for="content">Article Content *</label>
+                    <textarea id="content" name="content" required placeholder="Write your article content here... You can use HTML tags."></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tags">Tags (comma separated)</label>
+                        <input type="text" id="tags" name="tags" placeholder="AI, Technology, News">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Options</label>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="is_featured" name="is_featured" checked>
+                            <label for="is_featured">Feature this article</label>
+                        </div>
+                        <div class="checkbox-group" style="margin-top: 10px;">
+                            <input type="checkbox" id="is_published" name="is_published" checked>
+                            <label for="is_published">Publish immediately</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Image Upload (hidden for text-only) -->
+                <div class="form-group" id="imageGroup">
+                    <label>Featured Image</label>
+                    <div class="image-upload" onclick="document.getElementById('image').click()">
+                        <input type="file" id="image" name="image" accept="image/*">
+                        <p>📷 Click to upload image</p>
+                        <p style="font-size: 0.85rem; color: #666;">or drag and drop</p>
+                    </div>
+                    <div id="imagePreview" style="margin-top: 10px;"></div>
+                </div>
+                
+                <div style="margin-top: 30px;">
+                    <button type="submit" class="btn btn-primary">Publish Article</button>
+                    <button type="button" class="btn btn-secondary" onclick="previewPost()">Preview</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Preview Section -->
+        <div class="admin-card hidden" id="previewCard">
+            <h2>Preview</h2>
+            <div class="preview-section" id="previewContent"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_TOKEN = 'genz_aab035ee5ff1f203913e9d5672f38e8afb3bce7acde2219f54a110175069b66e';
+        let currentPostType = 'text-only';
+        
+        function selectPostType(type) {
+            currentPostType = type;
+            document.querySelectorAll('.post-type-option').forEach(el => {
+                el.classList.remove('selected');
+            });
+            document.querySelector(`[data-type="${type}"]`).classList.add('selected');
+            
+            // Show/hide image upload
+            const imageGroup = document.getElementById('imageGroup');
+            if (type === 'text-only') {
+                imageGroup.style.display = 'none';
+            } else {
+                imageGroup.style.display = 'block';
+            }
+        }
+        
+        document.getElementById('image').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('imagePreview').innerHTML = 
+                        `<img src="${e.target.result}" style="max-width: 300px; max-height: 200px; border-radius: 4px;">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        document.getElementById('postForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('title', document.getElementById('title').value);
+            formData.append('content', document.getElementById('content').value);
+            formData.append('category', document.getElementById('category').value);
+            formData.append('is_featured', document.getElementById('is_featured').checked);
+            formData.append('format_type', currentPostType === 'text-only' ? 'text-only' : 'default');
+            formData.append('status', document.getElementById('is_published').checked ? 'published' : 'draft');
+            
+            if (document.getElementById('description').value) {
+                formData.append('description', document.getElementById('description').value);
+            }
+            
+            if (document.getElementById('tags').value) {
+                formData.append('tags', document.getElementById('tags').value);
+            }
+            
+            const imageFile = document.getElementById('image').files[0];
+            if (imageFile && currentPostType !== 'text-only') {
+                formData.append('image', imageFile);
+            }
+            
+            try {
+                const response = await fetch('/ai-automation/post.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage('Article published successfully!', 'success');
+                    document.getElementById('postForm').reset();
+                    document.getElementById('imagePreview').innerHTML = '';
+                } else {
+                    showMessage(data.error || 'Failed to publish article', 'error');
+                }
+            } catch (error) {
+                showMessage('Network error: ' + error.message, 'error');
+            }
+        });
+        
+        function showMessage(message, type) {
+            const msgDiv = document.getElementById('message');
+            msgDiv.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            setTimeout(() => {
+                msgDiv.innerHTML = '';
+            }, 5000);
+        }
+        
+        function previewPost() {
+            const title = document.getElementById('title').value;
+            const content = document.getElementById('content').value;
+            const category = document.getElementById('category').value;
+            
+            if (!title || !content) {
+                showMessage('Please fill in title and content', 'error');
+                return;
+            }
+            
+            const previewCard = document.getElementById('previewCard');
+            const previewContent = document.getElementById('previewContent');
+            
+            previewContent.innerHTML = `
+                <div style="margin-bottom: 10px; color: #326891; font-weight: 600;">${category}</div>
+                <h1 style="font-size: 1.8rem; margin-bottom: 15px;">${title}</h1>
+                <div style="line-height: 1.7; color: #333;">${content}</div>
+            `;
+            
+            previewCard.classList.remove('hidden');
+            previewCard.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

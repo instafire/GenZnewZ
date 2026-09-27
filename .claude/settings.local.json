@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tree:*)",
+      "Bash(find:*)",
+      "Bash(curl:*)",
+      "Bash(php artisan:*)",
+      "Bash(php artisan config:clear:*)",
+      "Bash(php:*)",
+      "Bash(ls:*)",
+      "Bash(chmod:*)",
+      "Bash(wc:*)",
+      "Bash(grep:*)",
+      "WebFetch(domain:genznewz.com)",
+      "Bash(awk:*)",
+      "WebFetch(domain:www.pexels.com)",
+      "WebSearch",
+      "Bash(1 <<'TINKER'\n$posts = \\\\Botble\\\\Blog\\\\Models\\\\Post::where\\(\"status\",\"published\"\\)->orderByDesc\\(\"created_at\"\\)->take\\(5\\)->get\\([\"id\",\"name\",\"image\",\"status\",\"format_type\",\"created_at\"]\\);\nforeach\\($posts as $p\\) { echo \"ID:\" . $p->id . \" | Img:\" . \\(empty\\($p->image\\) ? \"NONE\" : \"YES\"\\) . \" | \" . $p->created_at . \" | \" . $p->name . \"\\\\n\"; }\nTINKER)",
+      "Bash(1 <<'TINKER'\n$p = \\\\Botble\\\\Blog\\\\Models\\\\Post::find\\(633\\);\necho \"author_id: \" . $p->author_id . \"\\\\n\";\necho \"author_type: \" . $p->author_type . \"\\\\n\";\necho \"status: \" . $p->status . \"\\\\n\";\necho \"created: \" . $p->created_at . \"\\\\n\";\necho \"updated: \" . $p->updated_at . \"\\\\n\";\necho \"format: \" . $p->format_type . \"\\\\n\";\nTINKER)",
+      "Bash(1 <<'TINKER'\n$p = \\\\Botble\\\\Blog\\\\Models\\\\Post::find\\(633\\);\necho \"status raw: \" . var_export\\($p->status, true\\) . \"\\\\n\";\necho \"status class: \" . get_class\\($p->status\\) . \"\\\\n\";\necho \"status value: \" . $p->status->value . \"\\\\n\";\necho \"status string cast: \" . \\(string\\)$p->status . \"\\\\n\";\necho \"equals published: \" . \\(\\(string\\)$p->status === \"published\" ? \"YES\" : \"NO\"\\) . \"\\\\n\";\nTINKER)",
+      "Bash(1 <<'TINKER'\n$p = \\\\Botble\\\\Blog\\\\Models\\\\Post::find\\(633\\);\n$statusStr = \\(string\\)$p->status;\necho \"status string cast: \" . $statusStr . \"\\\\n\";\necho \"equals published: \" . \\($statusStr === \"published\" ? \"YES\" : \"NO\"\\) . \"\\\\n\";\necho \"getValue: \" . $p->status->getValue\\(\\) . \"\\\\n\";\nTINKER)",
+      "Bash(1 <<'TINKER'\n$posts = \\\\Botble\\\\Blog\\\\Models\\\\Post::whereIn\\(\"id\", [632, 633]\\)->get\\([\"id\",\"name\",\"image\"]\\);\nforeach\\($posts as $p\\) { echo \"ID:\" . $p->id . \" | \" . \\(empty\\($p->image\\) ? \"NONE\" : \"HAS IMAGE\"\\) . \" | \" . $p->name . \"\\\\n\"; }\nTINKER)",
+      "WebFetch(domain:pagespeed.web.dev)",
+      "WebFetch(domain:www.googleapis.com)",
+      "Bash(python3 -c:*)"
+    ]
+  }
+}

@@ -1,0 +1,81 @@
+/* Accessibility Improvements - Modern Approach */
+
+/*
+ * Modern Skip Navigation:
+ * Instead of traditional skip link, we use enhanced keyboard navigation
+ * with smooth focus management and visual indicators only when needed
+ */
+
+/* Modern Focus Indicators - Only for Keyboard Users */
+
+/* Hide focus indicators by default (for mouse users) */
+:focus {
+    outline: none;
+}
+
+/* Show enhanced focus indicators only for keyboard users */
+body.keyboard-user a:focus,
+body.keyboard-user button:focus,
+body.keyboard-user input:focus,
+body.keyboard-user textarea:focus,
+body.keyboard-user select:focus {
+    outline: 3px solid #667eea;
+    outline-offset: 3px;
+    border-radius: 4px;
+    transition: outline-offset 0.2s ease;
+}
+
+/* Extra prominent focus for interactive elements */
+body.keyboard-user a:focus {
+    outline-color: #667eea;
+    background: rgba(102, 126, 234, 0.05);
+}
+
+body.keyboard-user button:focus {
+    outline-color: #764ba2;
+    box-shadow: 0 0 0 4px rgba(118, 75, 162, 0.1);
+}
+
+/* Focus Visible (modern browsers - most elegant solution) */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+    outline: 3px solid #667eea;
+    outline-offset: 3px;
+    transition: all 0.2s ease;
+}
+
+/* Smooth focus transitions */
+a, button, input, textarea, select {
+    transition: outline-offset 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Ensure sufficient color contrast */
+.article-body {
+    color: #121212;
+    line-height: 1.8;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    body {
+        background: #000000;
+        color: #ffffff;
+    }
+
+    a {
+        text-decoration: underline;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

@@ -1,0 +1,148 @@
+{
+    "name": "botble/cms",
+    "type": "project",
+    "description": "The Botble CMS application.",
+    "keywords": ["cms", "botble", "laravel"],
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "botble/api": "@dev",
+        "botble/assets": "@dev",
+        "botble/platform": "@dev",
+        "botble/captcha": "@dev",
+        "botble/data-synchronize": "@dev",
+        "botble/fob-comment": "^1.0",
+        "botble/getting-started": "@dev",
+        "botble/installer": "@dev",
+        "botble/media": "@dev",
+        "botble/menu": "@dev",
+        "botble/optimize": "@dev",
+        "botble/page-builder": "@dev",
+        "botble/payment": "@dev",
+        "botble/revision": "@dev",
+        "botble/seo-helper": "@dev",
+        "botble/shortcode": "@dev",
+        "botble/slug": "@dev",
+        "botble/theme": "@dev",
+        "botble/widget": "@dev",
+        "botble/ads": "@dev",
+        "botble/analytics": "@dev",
+        "botble/audit-log": "@dev",
+        "botble/backup": "@dev",
+        "botble/ban-ip": "@dev",
+        "botble/blog": "@dev",
+        "botble/contact": "@dev",
+        "botble/cookie-consent": "@dev",
+        "botble/country": "@dev",
+        "botble/custom-field": "@dev",
+        "botble/faq": "@dev",
+        "botble/gallery": "@dev",
+        "botble/language": "@dev",
+        "botble/note": "@dev",
+        "botble/page": "@dev",
+        "botble/payment-gateway-integration": "@dev",
+        "botble/paypal": "@dev",
+        "botble/request-log": "@dev",
+        "botble/rss-feed": "@dev",
+        "botble/social-login": "@dev",
+        "botble/stripe": "@dev",
+        "botble/translation": "@dev",
+        "botble/webhook": "@dev",
+        "botble/zipper": "@dev",
+        "botble/simple-slider": "@dev",
+        "botble/author": "@dev",
+        "botble/career": "@dev",
+        "botble/newsletter": "@dev",
+        "botble/testimonial": "@dev",
+        "guzzlehttp/guzzle": "^7.2",
+        "laravel/framework": "^11.0",
+        "laravel/sanctum": "^4.0",
+        "laravel/tinker": "^2.9",
+        "wikimedia/composer-merge-plugin": "^2.1",
+        "ext-json": "*",
+        "ext-fileinfo": "*",
+        "intervention/image": "^3.0"
+    },
+    "require-dev": {
+        "fakerphp/faker": "^1.23",
+        "laravel/pint": "^1.13",
+        "laravel/sail": "^1.26",
+        "mockery/mockery": "^1.6",
+        "nunomaduro/collision": "^8.0",
+        "phpunit/phpunit": "^11.0",
+        "spatie/laravel-ignition": "^2.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Botble\\Author\\": "platform/plugins/author/src/",
+            "Botble\\Blog\\": "platform/plugins/blog/src/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/",
+            "Theme\\Newspaper\\": "platform/themes/newspaper/src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi"
+        ],
+        "post-update-cmd": [
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
+            "Aws\\Script\\Composer\\Composer::removeUnusedServices",
+            "Google\\Task\\Composer\\cleanup",
+            "@php artisan cms:publish:assets"
+        ],
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ],
+        "post-create-project-cmd": [
+            "@php artisan key:generate --ansi"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "dont-discover": []
+        },
+        "merge-plugin": {
+            "include": [
+                "./platform/plugins/*/composer.json",
+                "./platform/themes/*/composer.json"
+            ],
+            "recurse": false,
+            "replace": false,
+            "ignore-duplicates": false,
+            "merge-dev": false,
+            "merge-extra": false,
+            "merge-extra-deep": false,
+            "merge-scripts": false
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true,
+            "pestphp/pest-plugin": true,
+            "wikimedia/composer-merge-plugin": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "repositories": [
+        {
+            "type": "path",
+            "url": "./platform/core"
+        },
+        {
+            "type": "path",
+            "url": "./platform/packages/*"
+        }
+    ]
+}
