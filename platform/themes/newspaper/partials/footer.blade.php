@@ -145,6 +145,11 @@
                 <span>•</span>
                 <a href="https://apnews.com/" target="_blank" rel="noopener noreferrer nofollow">AP News</a>
             </p>
+            <p class=footer-badge>
+                <a href=https://aiagentsdirectory.com/agent/genznewz target=_blank rel=noopener title=Discover GenZnewZ on AI Agents Directory>
+                    <img src=https://aiagentsdirectory.com/featured-badge.svg?v=2024 alt=GenZnewZ - Featured on AI Agents Directory width=200 height=50 loading=lazy />
+                </a>
+            </p>
             <p class="footer-disclosure">
                 We use Microsoft Clarity to understand how readers interact with the site through analytics, heatmaps, and session replay.
                 <a href="{{ url('/privacy-policy') }}">Privacy Policy</a>

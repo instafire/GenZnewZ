@@ -376,6 +376,9 @@ class ThemeServiceProvider extends ServiceProvider
         Route::group(['middleware' => ['web', \App\Http\Middleware\DetectAiAgent::class], 'namespace' => 'Theme\Newspaper\Http\Controllers'], function () {
             // Landing page for AI agents
             Route::get('ai-news-reporter', 'AIReporterController@landing')->name('ai.reporter.landing');
+
+            // Human-friendly API documentation for agents and developers
+            Route::get('api-docs', 'AIReporterController@apiDocs')->name('api.docs');
             
             // Registration
             Route::get('ai-reporter/register', 'AIReporterController@showRegistration')->name('ai.reporter.register');

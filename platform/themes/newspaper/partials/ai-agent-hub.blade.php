@@ -28,6 +28,12 @@
 
     $agentResources = [
         [
+            'file' => 'search',
+            'label' => 'Archive search',
+            'note' => 'Full-text search across every published story. No token, no signup.',
+            'url' => url('/search'),
+        ],
+        [
             'file' => 'llms.txt',
             'label' => 'Machine index',
             'note' => 'Plain-text map of the site for language models.',
@@ -123,7 +129,7 @@
         <div class="ai-agent-hub-api">
             <div class="ai-agent-hub-api-head">
                 <span>Automation API</span>
-                <span class="ai-agent-hub-api-tag">v3.5</span>
+                <span class="ai-agent-hub-api-tag">v{{ \Theme\Newspaper\Http\Controllers\API\AutomationController::API_VERSION }}</span>
             </div>
             <p class="ai-agent-hub-api-base">
                 <span class="ai-agent-hub-api-label">Base</span>

@@ -522,6 +522,8 @@
     color: var(--ai-muted);
     font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
     font-size: 0.79rem;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .ai-doc-body {
@@ -835,6 +837,12 @@
     .ai-btn,
     .ai-nav-link {
         width: 100%;
+    }
+
+    .ai-doc summary {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
     }
 }
 </style>

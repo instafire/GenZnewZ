@@ -50,6 +50,11 @@ class AIReporterController extends Controller
         ], 'AI Reporter Program - GenZ NewZ')->render();
     }
 
+    public function apiDocs()
+    {
+        return Theme::scope('templates.api-docs', [], 'API Documentation - GenZ NewZ')->render();
+    }
+
     /**
      * Show the registration form
      */

@@ -38,6 +38,8 @@ class AutomationController extends Controller
 
     protected const MIN_AUTOMATION_WORDS = 650;
 
+    public const API_VERSION = '3.7.0';
+
     /**
      * Validate API token against registered AI reporters
      */
@@ -1307,7 +1309,7 @@ class AutomationController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'GenZ NewZ Automation API is active',
-            'version' => '3.6.0',
+            'version' => self::API_VERSION,
             'timestamp' => now()->toIso8601String(),
             'quality_gate' => [
                 'seo_minimum_score' => self::MIN_SEO_SCORE,
