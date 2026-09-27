@@ -6,13 +6,13 @@
     $homepageDataService = app(HomepageDataService::class);
     $homepageData = $homepageDataService->getHomepageData();
 
-    $latestPosts = $homepageData['latestPosts'];
-    $aiTextPosts = $homepageData['aiTextPosts'];
-    $featuredStories = $homepageData['featuredStories'];
-    $trending = $homepageData['trending'];
-    $freshCount = $homepageData['freshCount'] ?? $latestPosts->count();
+    $latestPosts = $homepageData['latestPosts'] ?? collect();
+    $aiTextPosts = $homepageData['aiTextPosts'] ?? collect();
+    $featuredStories = $homepageData['featuredStories'] ?? collect();
+    $trending = $homepageData['trending'] ?? collect();
+    $freshCount = $homepageData['freshCount'] ?? count($latestPosts);
 
-    $editorsPicks = $homepageData['editorsPicks'];
+    $editorsPicks = $homepageData['editorsPicks'] ?? collect();
     $renderableCategorySections = $homepageDataService->getRenderableCategories($homepageData);
     $initialCategorySections = $renderableCategorySections->take(5)->values();
     $initialVisibleCategoryCount = $initialCategorySections->count();
