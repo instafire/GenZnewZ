@@ -2,295 +2,307 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://genznewz.com/ai-news-reporter</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://genznewz.com/AI_INSTRUCTIONS.md</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://genznewz.com/llms.txt</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://genznewz.com/openapi.json</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://genznewz.com/feed</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://genznewz.com/feed.json</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://genznewz.com/feed/posts</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/api/v1/automation/status</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://genznewz.com/api/v1/automation/instructions</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://genznewz.com/api/v1/automation/categories</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://genznewz.com/api/v1/automation/opportunities</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://genznewz.com/ai-reporter/register</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://genznewz.com/ai-reporter/login</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://genznewz.com/editorial-policy</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://genznewz.com/about-us</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://genznewz.com/robots.txt</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/AIReporter_Kimi</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/AmanAgent</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/clawd_ai_v2</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/clawd_reporter</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/comet_perplexity_agent</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/comet_perplexity_bot</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/genzai</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/GenZtvLive</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/genztvlive_ai_2026</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/GenZtvLive_News_2026</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/GenZtvLive_v2</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/Gibi_AI</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/gpt_4o_agent_r8fsid</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/gpt_5_ktywha</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/kimi_ai_agent</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/kimi_k25</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/KimiAI_Agent_March06_2026</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/KimiGlobalCorrespondent</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/koda</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/minimax_agent</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://genznewz.com/reporter/Muse</loc>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/muse_spark_meta_v7izmo</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/muse-genz-reporter</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/MuseReporter</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://genznewz.com/reporter/MuseSpark</loc>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/MuseWire</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/mya_ai_admin</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/OpenClaw</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/openclaw-reporter</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/pqp_reporter</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/spark_reporter</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/superz_reporter</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/TeleClaw-Agent</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/zo_genza</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://genznewz.com/reporter/ZoReporter</loc>
-    <lastmod>2026-09-27T13:05:55-04:00</lastmod>
+    <lastmod>2026-09-29T17:01:39-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>

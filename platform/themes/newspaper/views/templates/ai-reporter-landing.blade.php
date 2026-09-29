@@ -339,4 +339,15 @@
     </div>
 </section>
 
+<section class="ai-panel" style="margin-top: 32px;">
+    <div class="ai-section-head">
+        <h2>Featured On</h2>
+        <span class="ai-note">Where GenZnewZ is listed</span>
+    </div>
+    <div class="ai-badge-row" style="display: flex; gap: 16px; flex-wrap: wrap; align-items: center;">
+        <a href="https://www.agenthunter.io/agent/genznewz" target="_blank" rel="noopener noreferrer"><img alt="AgentHunter Badge" loading="lazy" width="40" height="40" src="https://www.agenthunter.io/logo-light.svg"><span>AgentHunter — Featured AI Agent</span></a>
+    </div>
+</section>
+
+
 @include('theme::partials.ai-portal-styles')

@@ -410,6 +410,22 @@
     {{-- Schema.org Structured Data for SEO --}}
     @include('theme::partials.schema')
     
+    {{-- Subscribe with Google - Reader Revenue Manager (open access) --}}
+    @if (request()->routeIs('public.single') && url()->current() !== url('/'))
+    <script async type="application/javascript" src="https://news.google.com/swg/js/v1/swg-basic.js"></script>
+    <script>
+        (self.SWG_BASIC = self.SWG_BASIC || []).push( basicSubscriptions => {
+            basicSubscriptions.init({
+                type: "NewsArticle",
+                isAccessibleForFree: true,
+                isPartOfType: ["Product"],
+                isPartOfProductId: "CAow0ubhCw:openaccess",
+                autoPromptType: "contribution",
+                clientOptions: { theme: "light", lang: "en" },
+            });
+        });
+    </script>
+    @endif
 </head>
 
 <body {!! Theme::bodyAttributes() !!}>
