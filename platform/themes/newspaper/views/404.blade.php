@@ -1,6 +1,12 @@
 @php
     SeoHelper::setTitle('Page Not Found - 404 Error | GenZ NewZ');
     SeoHelper::setDescription('Sorry, the page you are looking for could not be found. Explore our latest news and articles.');
+
+    // A 404 has no post context, yet the shared layout's breadcrumb partial
+    // can inherit a stale $post/$category from the dispatching request and
+    // render a bogus trail (e.g. to an unrelated article). Clear both.
+    $post = null;
+    $category = null;
     $searchPageUrl = \Illuminate\Support\Facades\Route::has('public.search') ? route('public.search') : url('/search');
     
     // Get popular posts for suggestions. Cached: this template also renders on
@@ -22,6 +28,36 @@
 @endphp
 
 @extends(Theme::getThemeNamespace('layouts.default'))
+
+@push('header')
+@php
+    // The 404 view renders outside the theme's beforeRenderTheme pipeline, so the
+    // theme stylesheets/JS registered in config.php never load here. Emit them
+    // directly (same files, same filemtime versioning as config.php).
+    $gznCssDir = platform_path('themes/newspaper/public/css');
+    $gznJsDir = platform_path('themes/newspaper/public/js');
+    $gznVer = function ($dir, $file) {
+        $path = $dir . '/' . $file;
+        return file_exists($path) ? (string) filemtime($path) : '';
+    };
+    $gznSheets = ['fonts.css', 'theme-header.css', 'newspaper.css', 'performance.css', 'theme-components.css', 'theme-dark.css'];
+@endphp
+@foreach ($gznSheets as $sheet)
+    <link media="all" type="text/css" rel="stylesheet" href="{{ url('themes/newspaper/css/' . $sheet) }}?v={{ $gznVer($gznCssDir, $sheet) }}">
+@endforeach
+<script>
+    // Apply the reader's dark-mode choice before first paint (mirrors newspaper.js).
+    (function () {
+        try {
+            var stored = window.localStorage ? localStorage.getItem('darkMode') : null;
+            var dark = stored === 'enabled' ? true : stored === 'disabled' ? false :
+                !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            if (dark) document.body.classList.add('dark-mode');
+        } catch (e) {}
+    })();
+</script>
+<script defer src="{{ url('themes/newspaper/js/newspaper.js') }}?v={{ $gznVer($gznJsDir, 'newspaper.js') }}"></script>
+@endpush
 
 @section('content')
 <div class="error-page-container">
@@ -55,13 +91,13 @@
     <div class="suggested-content">
         <h2>Popular Articles You Might Like</h2>
         <div class="suggested-grid">
-            @foreach($popularPosts as $post)
+            @foreach($popularPosts as $suggestedPost)
             <article class="suggested-card">
-                @if($post->image)
-                <a href="{{ $post->url }}" class="suggested-image">
+                @if($suggestedPost->image)
+                <a href="{{ $suggestedPost->url }}" class="suggested-image">
                     @include('theme::partials.image', [
-                        'image' => $post->image,
-                        'alt' => $post->name,
+                        'image' => $suggestedPost->image,
+                        'alt' => $suggestedPost->name,
                         'size' => 'medium',
                         'class' => 'suggested-image',
                         'imgClass' => 'suggested-image',
@@ -70,11 +106,11 @@
                 </a>
                 @endif
                 <div class="suggested-body">
-                    @if($post->categories->first())
-                    <span class="suggested-category">{{ $post->categories->first()->name }}</span>
+                    @if($suggestedPost->categories->first())
+                    <span class="suggested-category">{{ $suggestedPost->categories->first()->name }}</span>
                     @endif
-                    <h3><a href="{{ $post->url }}">{{ $post->name }}</a></h3>
-                    <span class="suggested-meta">{{ $post->views }} views</span>
+                    <h3><a href="{{ $suggestedPost->url }}">{{ $suggestedPost->name }}</a></h3>
+                    <span class="suggested-meta">{{ $suggestedPost->views }} views</span>
                 </div>
             </article>
             @endforeach
@@ -86,9 +122,9 @@
     <div class="browse-categories">
         <h2>Browse by Category</h2>
         <div class="category-list">
-            @foreach($categories as $category)
-            <a href="{{ $category->url }}" class="category-link">
-                {{ $category->name }}
+            @foreach($categories as $browseCategory)
+            <a href="{{ $browseCategory->url }}" class="category-link">
+                {{ $browseCategory->name }}
             </a>
             @endforeach
         </div>

@@ -44,3 +44,10 @@ Route::redirect('/news', '/search', 301);
 // Widget HTML endpoints
 Route::get('/widgets/crypto-html', [App\Http\Controllers\WidgetController::class, 'cryptoWidgetHtml'])->name('widgets.crypto.html');
 Route::get('/widgets/stock-html', [App\Http\Controllers\WidgetController::class, 'stockWidgetHtml'])->name('widgets.stock.html');
+
+// Clean Markdown rendering of one article for AI consumers. Article slugs
+// exclude dots, so this route never clashes with the catch-all blog slug.
+Route::get('{slug}.md', [\App\Http\Controllers\Api\ArticleReaderController::class, 'markdown'])
+    ->where('slug', '[^/.]+')
+    ->middleware('throttle:60,1')
+    ->name('article.markdown');

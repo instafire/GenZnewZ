@@ -414,31 +414,31 @@
 }
 
 /* Newspaper Footer */
-.newspaper-footer {
+.auth-newspaper .newspaper-footer {
     text-align: center;
     padding-top: 30px;
     border-top: 2px solid #1a1a1a;
     margin-top: 30px;
 }
 
-.newspaper-footer p {
+.auth-newspaper .newspaper-footer p {
     font-size: 0.8rem;
     color: #666;
     margin: 5px 0;
 }
 
-.footer-links {
+.auth-newspaper .footer-links {
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
 
-.footer-links a {
+.auth-newspaper .footer-links a {
     color: #326891;
     text-decoration: none;
 }
 
-.footer-links a:hover {
+.auth-newspaper .footer-links a:hover {
     text-decoration: underline;
 }
 

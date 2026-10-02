@@ -91,6 +91,9 @@ class HookServiceProvider extends ServiceProvider
                                 '@type' => 'ImageObject',
                                 'url' => RvMedia::getImageUrl(Theme::getLogo()),
                             ],
+                            'sameAs' => [
+                                'https://github.com/instafire/GenZnewZ',
+                            ],
                         ];
 
                         return $html . Html::tag('script', json_encode($schema, JSON_UNESCAPED_UNICODE), ['type' => 'application/ld+json'])

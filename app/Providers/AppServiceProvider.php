@@ -35,6 +35,7 @@ class AppServiceProvider extends ServiceProvider
 
         if (class_exists(\Botble\Blog\Models\Post::class)) {
             \Botble\Blog\Models\Post::observe(PostImageObserver::class);
+            \Botble\Blog\Models\Post::observe(\App\Observers\PostWebhookObserver::class);
         }
 
         if (

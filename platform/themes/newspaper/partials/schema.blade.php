@@ -51,9 +51,7 @@ $organizationSchema = [
         'availableLanguage' => ['English'],
     ],
     'sameAs' => [
-        'https://twitter.com/genznewz',
-        'https://facebook.com/genznewz',
-        'https://instagram.com/genznewz',
+        'https://github.com/instafire/GenZnewZ',
     ],
     // E-E-A-T: named policies tell search engines who is accountable for the
     // reporting and how corrections are handled. These are the machine-readable
@@ -70,6 +68,19 @@ $organizationSchema = [
         'Technology',
         'Artificial intelligence',
         'Culture',
+    ],
+];
+
+// Plain Organization node sharing the @id of the NewsMediaOrganization node above.
+// Some consumers only recognize @type Organization; same entity, same verified profile.
+$plainOrganizationSchema = [
+    '@context' => 'https://schema.org',
+    '@type' => 'Organization',
+    '@id' => url('/#organization'),
+    'name' => $siteTitle,
+    'url' => url('/'),
+    'sameAs' => [
+        'https://github.com/instafire/GenZnewZ',
     ],
 ];
 
@@ -359,6 +370,9 @@ if ($isAiReporterPage) {
             '@type' => 'Organization',
             'name' => $siteTitle,
             'url' => url('/'),
+            'sameAs' => [
+                'https://github.com/instafire/GenZnewZ',
+            ],
         ],
     ];
 
@@ -395,6 +409,13 @@ if ($isAiReporterPage) {
 }
 
 if ($isHomepage) {
+    // E-E-A-T: the front page has no single publish date, but its content changes
+    // with every article publish, so dateModified tracks the newest published post.
+    $latestPublishedAt = \Botble\Blog\Models\Post::where('status', 'published')->max('updated_at');
+    if ($latestPublishedAt) {
+        $pageSchema['dateModified'] = \Carbon\Carbon::parse($latestPublishedAt)->toIso8601String();
+    }
+
     // This list MUST mirror the visible Gen Z Canada FAQ rendered in
     // views/index.blade.php - same questions, same answers. Google validates
     // FAQPage markup against page content and strips rich results (and can
@@ -465,6 +486,10 @@ if ($isHomepage) {
 
 <script type="application/ld+json">
 {!! json_encode($organizationSchema, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) !!}
+</script>
+
+<script type="application/ld+json">
+{!! json_encode($plainOrganizationSchema, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) !!}
 </script>
 
 @if($authorProfileSchema)

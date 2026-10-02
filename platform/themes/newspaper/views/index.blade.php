@@ -235,7 +235,7 @@
                                     'size' => 'medium',
                                     'class' => 'featured-secondary-image',
                                     'imgClass' => 'featured-secondary-image',
-                                    'lazy' => true
+                                    'lazy' => $index > 2, // first two secondary cards are above the fold
                                 ])
                             @endif
                             <div class="featured-secondary-content">
@@ -260,7 +260,9 @@
         </section>
         @endif
 
-        {{-- Newsletter signup uses the existing newsletter subscription endpoint. --}}
+        @include('theme::partials.home-about')
+
+{{-- Newsletter signup uses the existing newsletter subscription endpoint. --}}
         <section class="homepage-newsletter" aria-labelledby="homepage-newsletter-title">
             <div>
                 <p class="homepage-section-kicker">Stay in the loop</p>

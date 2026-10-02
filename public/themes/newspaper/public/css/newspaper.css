@@ -323,7 +323,6 @@ body.dark-mode .homepage-entry-strip > a:hover {
     .homepage-signal-live i { animation: none; }
     .ai-card-simple:hover, .homepage-entry-strip > a:hover { transform: none; }
 }
-hira1313
 
 /* ============ Collapsible homepage hero (details/summary disclosure) ============ */
 .homepage-hero-disclosure {
@@ -410,4 +409,80 @@ hira1313
     clip: rect(0 0 0 0);
     white-space: nowrap;
     border: 0;
+}
+
+/* About-this-newsroom section (homepage GEO content). Uses --gzn-* tokens so dark mode follows automatically. */
+.gzn-about {
+    margin: 36px 0;
+    padding: 28px;
+    border: 1px solid var(--gzn-border);
+    border-radius: 16px;
+    background: var(--gzn-surface);
+}
+.gzn-about .homepage-section-kicker {
+    margin-bottom: 10px;
+}
+.gzn-about h2.section-title {
+    margin: 0 0 14px;
+}
+.gzn-about h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 24px 0 8px;
+    color: var(--gzn-ink);
+    line-height: 1.4;
+}
+.gzn-about p {
+    color: var(--gzn-ink-soft);
+    line-height: 1.7;
+    margin: 0 0 14px;
+    font-size: 1rem;
+}
+.gzn-about table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 0.92rem;
+}
+.gzn-about th,
+.gzn-about td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--gzn-border);
+    vertical-align: top;
+}
+.gzn-about th {
+    font-family: 'Space Grotesk', sans-serif;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    color: var(--gzn-muted);
+}
+.gzn-about td {
+    color: var(--gzn-ink-soft);
+}
+.gzn-about code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85em;
+    background: var(--gzn-surface-muted);
+    border: 1px solid var(--gzn-border);
+    padding: 2px 7px;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+.gzn-about a {
+    color: #326891;
+    text-decoration: underline;
+}
+body.dark-mode .gzn-about a {
+    color: #8fc3e8;
+}
+@media (max-width: 640px) {
+    .gzn-about {
+        padding: 20px 16px;
+    }
+    .gzn-about table {
+        font-size: 0.85rem;
+    }
 }

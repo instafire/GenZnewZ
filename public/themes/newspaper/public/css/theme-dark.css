@@ -465,3 +465,236 @@ body.dark-mode .load-more-btn {
         width: calc(100% - 24px) !important;
     }
 }
+
+/* ============ Dark-mode contrast fixes (2026-10-01) ============
+   Audit found invisible/low-contrast text in dark mode. All rules
+   scoped under body.dark-mode so light mode is untouched. */
+
+/* 1. --gzn-* ink variables were light-theme-only: near-black text on
+   near-black background (homepage hero disclosure "The AI-native
+   newsroom" / "Why Gen Z News?" were invisible). */
+body.dark-mode {
+    --gzn-ink: #eceff4;
+    --gzn-ink-soft: #c6cdd8;
+    --gzn-muted: #9aa3b2;
+    --gzn-accent-ink: #ffd98a;
+    --gzn-surface: #161616;
+    --gzn-surface-muted: #1e1e1e;
+    --gzn-border: #333;
+}
+
+/* 2. Async crypto/stock widget footers render a classless <a>
+   (WidgetController::renderCryptoWidget/renderStockWidget), falling
+   back to browser default blue #0000EE (contrast 1.85 on dark). */
+body.dark-mode .crypto-widget-footer a,
+body.dark-mode .stock-widget-footer a {
+    color: #8dbce8;
+    text-decoration: none;
+    font-weight: 600;
+}
+body.dark-mode .crypto-widget-footer a:hover,
+body.dark-mode .stock-widget-footer a:hover {
+    color: #f0f0f0;
+    text-decoration: underline;
+}
+
+/* 3. Meta blue #326891 too dim on dark (contrast ~2.9-3.1):
+   card view counts, category labels, feed links. */
+body.dark-mode .ai-card-views,
+body.dark-mode .homepage-feed-link,
+body.dark-mode .article-category,
+body.dark-mode .post-category,
+body.dark-mode .crypto-view-all,
+body.dark-mode .stock-view-all {
+    color: #7fb3dd;
+}
+
+/* 4. Pagination ellipsis was #555 on #1e1e1e (contrast 2.24). */
+body.dark-mode .pagination-wrapper .page-item.disabled .page-link {
+    color: #888;
+}
+
+/* 5. Header date, photo attribution, footer legal/copyright were #666
+   on near-black (contrast 3.03). */
+body.dark-mode .header-date,
+body.dark-mode .pexels-attribution,
+body.dark-mode .pexels-attribution a,
+body.dark-mode .footer-legal a,
+body.dark-mode .footer-copyright {
+    color: #9a9a9a;
+}
+
+/* 6. LIVE badge: white on emerald #10b981 (contrast 2.54) ->
+   dark text keeps the badge look with strong contrast. */
+body.dark-mode .crypto-live-badge {
+    color: #052e22;
+}
+
+/* ============ Dark-mode contrast fixes, round 2 (2026-10-01) ============ */
+
+/* Editors-pick card dates were #666 on dark (contrast 3.26). */
+body.dark-mode .editors-pick-meta .meta-date {
+    color: #9a9a9a;
+}
+
+/* Photo attribution: post.css loads after theme-dark.css and pins #666,
+   so the element selector raises specificity to win without editing it. */
+body.dark-mode p.pexels-attribution,
+body.dark-mode p.pexels-attribution a {
+    color: #9a9a9a;
+}
+body.dark-mode p.pexels-attribution a:hover {
+    color: #c0c0c0;
+}
+
+/* Footer "External references" line was #7f7f7f. */
+body.dark-mode .footer-external-links {
+    color: #9a9a9a;
+}
+
+/* ============ Auth pages (login/register) dark mode (2026-10-01) ============
+   The newspaper-auth card is light-only (white card, #1a1a1a ink); in dark mode
+   it floated as a white slab on the dark page. Scoped under body.dark-mode. */
+
+body.dark-mode .auth-page.newspaper-auth {
+    background: #121212;
+}
+
+body.dark-mode .auth-newspaper {
+    background: #1b1b1e;
+    border-color: #e8e8e8;
+    box-shadow:
+        0 0 0 1px #e8e8e8,
+        4px 4px 0 0 #e8e8e8,
+        8px 8px 0 0 rgba(232, 232, 232, 0.12);
+}
+
+body.dark-mode .masthead-date,
+body.dark-mode .masthead-tagline {
+    color: #9a9a9a;
+}
+
+body.dark-mode .divider-line {
+    background: #e8e8e8;
+}
+
+body.dark-mode .divider-text,
+body.dark-mode .form-group label {
+    color: #f0f0f0;
+}
+
+body.dark-mode .newspaper-input {
+    background: #242428;
+    border-color: #e8e8e8;
+    color: #f0f0f0;
+}
+
+body.dark-mode .newspaper-input::placeholder {
+    color: #8a8a8a;
+}
+
+body.dark-mode .newspaper-input:focus {
+    background: #2a2a2e;
+    box-shadow: 3px 3px 0 0 rgba(232, 232, 232, 0.35);
+}
+
+body.dark-mode .checkbox-label,
+body.dark-mode .form-help {
+    color: #b5b5b5;
+}
+
+body.dark-mode .checkmark {
+    border-color: #e8e8e8;
+}
+
+body.dark-mode .checkbox-label input:checked + .checkmark {
+    background: #e8e8e8;
+}
+
+body.dark-mode .checkbox-label input:checked + .checkmark::after {
+    color: #121212;
+}
+
+body.dark-mode .forgot-link,
+body.dark-mode .auth-newspaper .footer-links a {
+    color: #8ab6d6;
+}
+
+body.dark-mode .newspaper-btn-primary {
+    background: #f0f0f0;
+    color: #121212;
+    border-color: #f0f0f0;
+}
+
+body.dark-mode .newspaper-btn-primary:hover {
+    background: #ffffff;
+    box-shadow: 4px 4px 0 0 rgba(240, 240, 240, 0.25);
+}
+
+body.dark-mode .newspaper-btn-secondary {
+    background: transparent;
+    color: #f0f0f0;
+    border-color: #e8e8e8;
+}
+
+body.dark-mode .newspaper-btn-secondary:hover {
+    background: #242428;
+    box-shadow: 4px 4px 0 0 rgba(232, 232, 232, 0.15);
+}
+
+body.dark-mode .alert-error {
+    background: #2a1a1a;
+    border-color: #e06060;
+    color: #f0a0a0;
+}
+
+body.dark-mode .auth-footer {
+    border-top-color: #3a3a3e;
+}
+
+body.dark-mode .footer-divider span {
+    background: #3a3a3e;
+}
+
+body.dark-mode .footer-divider p {
+    color: #9a9a9a;
+}
+
+body.dark-mode .auth-newspaper .newspaper-footer {
+    border-top-color: #e8e8e8;
+}
+
+body.dark-mode .auth-newspaper .newspaper-footer p {
+    color: #9a9a9a;
+}
+
+/* 404 page: hardcoded light-theme button colors vanish in dark mode. */
+body.dark-mode .btn-home {
+    background: #f5f5f5;
+    color: #121212;
+}
+body.dark-mode .btn-home:hover {
+    background: #ffbf47;
+    color: #121212;
+}
+body.dark-mode .btn-search {
+    background: transparent;
+    color: #f5f5f5;
+    border-color: #f5f5f5;
+}
+body.dark-mode .btn-search:hover {
+    background: #f5f5f5;
+    color: #121212;
+}
+body.dark-mode .search-box-404 .search-input {
+    background: #1e1e1e;
+    border-color: #3a3a3a;
+    color: #f5f5f5;
+}
+body.dark-mode .search-box-404 .search-input::placeholder {
+    color: #8a8a8a;
+}
+body.dark-mode .search-box-404 .search-btn {
+    background: #f5f5f5;
+    color: #121212;
+}

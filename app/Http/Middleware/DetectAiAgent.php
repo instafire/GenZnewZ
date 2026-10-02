@@ -62,6 +62,9 @@ class DetectAiAgent
             $response->headers->set('X-Documentation', url('/AI_INSTRUCTIONS.md'));
             $response->headers->set('X-Instruction-JSON', url('/api/v1/automation/instructions'));
             $response->headers->set('X-Category-Map', url('/api/v1/automation/categories'));
+            $response->headers->set('X-Read-API', url('/api/v1/articles'));
+            $response->headers->set('X-Topic-Map', url('/api/v1/topics'));
+            $response->headers->set('X-Markdown-Format', 'append .md to any article URL');
             
             return $response;
         }

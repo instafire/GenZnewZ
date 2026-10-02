@@ -151,6 +151,14 @@ return [
 
             // (article-tools-js moved to views/post.blade.php — article-only.)
 
+            // Drop the language plugin's public switcher assets. language-public.js
+            // only binds to `.language-wrapper` and language-public.css only styles
+            // it, but no theme view renders that widget anywhere (footer socials
+            // included), so both are dead weight on every public page. This runs
+            // at render time, after the plugin's own booted() registration.
+            $theme->asset()->remove('language-css');
+            $theme->asset()->container('footer')->remove('language-public-js');
+
             if (function_exists('shortcode')) {
                 $theme->composer(
                     ['page', 'post', 'category', 'tag', 'gallery'],

@@ -192,8 +192,8 @@
     </div>
 
     <!-- Footer -->
-    <footer class="newspaper-footer">
-        <div class="footer-line"></div>
+    <footer class="paper-edition-footer">
+        <div class="paper-edition-rule"></div>
         <p>© {{ now()->year }} GenZ NewZ. All rights reserved. | <a href="{{ route('public.single') }}">Back to Homepage</a></p>
     </footer>
 </div>
@@ -406,6 +406,23 @@
     .news-columns {
         grid-template-columns: 1fr;
     }
+    /* Stack the masthead: absolute date/edition overlap the title on narrow screens. */
+    .newspaper-masthead {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        text-align: center;
+    }
+    .masthead-date,
+    .masthead-edition {
+        position: static;
+        transform: none;
+    }
+    .masthead-title {
+        font-size: 2.6rem;
+        letter-spacing: -1px;
+    }
 }
 
 .news-column {
@@ -567,23 +584,23 @@
 }
 
 /* Footer */
-.newspaper-footer {
+.paper-edition-footer {
     text-align: center;
     padding-top: 20px;
     margin-top: 20px;
 }
 
-.footer-line {
+.paper-edition-rule {
     border-top: 3px double #121212;
     margin-bottom: 15px;
 }
 
-.newspaper-footer p {
+.paper-edition-footer p {
     font-size: 0.75rem;
     color: #666;
 }
 
-.newspaper-footer a {
+.paper-edition-footer a {
     color: #326891;
     text-decoration: none;
 }
@@ -701,11 +718,11 @@ body.dark-mode .market-item {
     border-bottom-color: #333;
 }
 
-body.dark-mode .footer-line {
+body.dark-mode .paper-edition-rule {
     border-color: #444;
 }
 
-body.dark-mode .newspaper-footer p {
+body.dark-mode .paper-edition-footer p {
     color: #888;
 }
 </style>

@@ -909,4 +909,10 @@
                 font-size: 0.66rem;
                 letter-spacing: 0.04em;
             }
+
+            /* The overlay input's 2.1rem type overflows narrow viewports. */
+            .search-overlay .search-input {
+                font-size: 1.05rem;
+                padding: 14px 0;
+            }
         }

@@ -61,6 +61,18 @@ Every feed is available as RSS 2.0 and JSON Feed 1.1. Feeds are the cheapest way
 
 Feeds advertise their own canonical URL via `<atom:link rel="self">` and pages declare theirs with `<link rel="alternate">`, so you can discover a feed from any page. An unknown topic slug returns 404, which distinguishes "no such feed" from "feed is currently empty". Responses are cacheable (`max-age=600`) and revalidate cheaply.
 
+## Read API for agents (no token)
+
+Public JSON over the full published archive — richer than RSS, no authentication, throttled at 120 requests/minute.
+
+- `GET https://genznewz.com/api/v1/articles`: Paginated article summaries (20/page, max 50). Filters: `?topic={slug}`, `?from=YYYY-MM-DD`, `?to=YYYY-MM-DD`.
+- `GET https://genznewz.com/api/v1/articles/{slug}`: One full article as JSON — title, description, `content_html`, `content_text`, word count, categories, tags, author, image, ISO dates.
+- `GET https://genznewz.com/api/v1/topics`: Live topic list (id, name, slug, URL) — never hardcode taxonomy from memory.
+- `GET https://genznewz.com/{slug}.md`: Any article as clean Markdown (`text/markdown`) — title, metadata header, body converted from HTML.
+- The Botble plugin API also exposes `GET /api/v1/posts`, `GET /api/v1/search`, `GET /api/v1/categories`, `GET /api/v1/tags` (summary payloads, no full content).
+
+Detected AI crawlers also receive these pointers as response headers: `X-Read-API`, `X-Topic-Map`, `X-Markdown-Format`.
+
 ## News for readers
 
 - [Homepage](https://genznewz.com/): Featured stories, latest feed and topic sections.
@@ -112,6 +124,22 @@ Use these to tell what changed, cheaply and without paginating the archive:
 - `GET https://genznewz.com/api/v1/automation/status`: Contract version and enforced quality gate.
 
 Article `datePublished` / `dateModified` are in each page's `NewsArticle` JSON-LD, and every sitemap entry carries a `<lastmod>`. Prefer those over assuming an article is current.
+
+## Webhooks (push notifications for new articles)
+
+Prefer polling? See "Freshness" above. For push, subscribe once and get a signed POST per publish:
+
+- `POST https://genznewz.com/api/v1/webhooks` with header `X-Internal-Token: <admin secret>` and JSON body `{"url": "https://your-server/hook", "events": ["article.published"]}`. The URL must be HTTPS. The signing secret is returned once in the response — store it; it is never shown again.
+- `GET https://genznewz.com/api/v1/webhooks` lists subscriptions (secrets redacted).
+- `DELETE https://genznewz.com/api/v1/webhooks/{id}` removes one.
+
+On every publish (new article, or draft → published transition; plain edits do not re-fire) each active subscriber receives:
+
+- Headers: `X-GNZ-Event: article.published`, `X-GNZ-Signature: sha256=<hex HMAC-SHA256 of the raw request body, keyed with your secret>`, `Content-Type: application/json`.
+- Body: `{"event": "article.published", "delivered_at": "<ISO8601>", "delivery_id": "<uuid>", "article": {"id", "title", "slug", "url", "markdown_url", "description", "published_at", "topics": [{"id","name","slug"}], "tags": [], "author", "image"}}`.
+- Verify the signature with a timing-safe compare before acting on the payload. Respond 2xx. After 5 consecutive failures (network error or non-2xx) the subscription is auto-disabled.
+
+Full event schema: the `webhooks` section of [openapi.json](https://genznewz.com/openapi.json).
 
 ## Optional
 
