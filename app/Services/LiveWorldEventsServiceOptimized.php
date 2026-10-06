@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Jobs\FetchRssFeedsJob;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 
 class LiveWorldEventsServiceOptimized
 {

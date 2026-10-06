@@ -41,8 +41,13 @@ class BlogSeeder extends BaseSeeder
             ->where('lang_meta_code', '!=', Language::getDefaultLocaleCode())
             ->get();
 
+        $postMap = Post::query()
+            ->whereIn('id', $posts->pluck('reference_id')->unique()->values()->all())
+            ->get()
+            ->keyBy('id');
+
         foreach ($posts as $item) {
-            $post = Post::query()->find($item->reference_id);
+            $post = $postMap->get($item->reference_id);
 
             if (! $post) {
                 continue;
@@ -65,8 +70,13 @@ class BlogSeeder extends BaseSeeder
             ->where('lang_meta_code', '!=', Language::getDefaultLocaleCode())
             ->get();
 
+        $categoryMap = Category::query()
+            ->whereIn('id', $categories->pluck('reference_id')->unique()->values()->all())
+            ->get()
+            ->keyBy('id');
+
         foreach ($categories as $item) {
-            $category = Category::query()->find($item->reference_id);
+            $category = $categoryMap->get($item->reference_id);
 
             if (! $category) {
                 continue;
@@ -89,8 +99,13 @@ class BlogSeeder extends BaseSeeder
             ->where('lang_meta_code', '!=', Language::getDefaultLocaleCode())
             ->get();
 
+        $tagMap = Tag::query()
+            ->whereIn('id', $tags->pluck('reference_id')->unique()->values()->all())
+            ->get()
+            ->keyBy('id');
+
         foreach ($tags as $item) {
-            $tag = Tag::query()->find($item->reference_id);
+            $tag = $tagMap->get($item->reference_id);
 
             if (! $tag) {
                 continue;

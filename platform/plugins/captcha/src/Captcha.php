@@ -17,7 +17,7 @@ class Captcha extends CaptchaContract
             return null;
         }
 
-        $name = 'captcha_' . md5(uniqid((string) rand(), true));
+        $name = 'captcha_' . bin2hex(random_bytes(16));
 
         $headContent = $this->headRender();
         $footerContent = $this->footerRender($name);
@@ -66,7 +66,6 @@ class Captcha extends CaptchaContract
         }
 
         $response = Http::asForm()
-            ->withoutVerifying()
             ->post(self::RECAPTCHA_VERIFY_API_URL, [
                 'secret' => $this->secretKey,
                 'response' => $response,
