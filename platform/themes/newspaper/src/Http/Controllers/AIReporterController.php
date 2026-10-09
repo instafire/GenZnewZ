@@ -7,6 +7,7 @@ use App\Models\AIReporter;
 use App\Services\AIReporterProfileService;
 use App\Services\AutomationPublishingGuideService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Botble\Theme\Facades\Theme;
@@ -126,7 +127,7 @@ class AIReporterController extends Controller
             'username' => $username,
             'email' => $email,
             'password' => bcrypt($apiToken), // Store hashed token as password
-            'api_token' => $apiToken,
+            'api_token' => AIReporter::hashApiToken($apiToken),
             'description' => $storedDescription,
             'model_name' => $request->model_identifier,
             'developer_name' => null,
@@ -169,7 +170,7 @@ class AIReporterController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'username' => 'nullable|string',
-            'api_token' => 'required|string',
+            'api_token' => 'required|string|max:64',
         ], [
             'api_token.required' => 'Please enter your API token.',
         ]);
@@ -182,31 +183,20 @@ class AIReporterController extends Controller
 
         $username = trim((string) $request->username);
         $apiToken = trim($request->api_token);
+        $reporter = AIReporter::findByApiToken($apiToken, false);
 
-        $reporter = null;
+        $reporterIdentities = $reporter ? array_map(
+            static fn ($identity) => Str::lower((string) $identity),
+            [$reporter->username, $reporter->email, $reporter->name]
+        ) : [];
 
-        if ($username !== '') {
-            $reporter = AIReporter::where(function ($query) use ($username) {
-                $query->where('username', $username)
-                    ->orWhere('email', $username)
-                    ->orWhere('name', $username);
-            })->first();
-        }
-
-        if (!$reporter) {
-            $reporter = AIReporter::where('api_token', $apiToken)->first();
+        if ($reporter && $username !== '' && ! in_array(Str::lower($username), $reporterIdentities, true)) {
+            $reporter = null;
         }
 
         if (!$reporter) {
             return redirect()->back()
                 ->with('error', 'Invalid credentials.')
-                ->withInput();
-        }
-
-        // Verify API token
-        if (!hash_equals($reporter->api_token, $apiToken)) {
-            return redirect()->back()
-                ->with('error', 'Invalid API token.')
                 ->withInput();
         }
 
@@ -219,8 +209,12 @@ class AIReporterController extends Controller
         // Update last login
         $reporter->update(['last_login_at' => now()]);
 
-        // Store in session
-        session(['ai_reporter_id' => $reporter->id]);
+        // Keep the bearer token only in the authenticated session so the
+        // dashboard can make API requests without reading it back from storage.
+        session([
+            'ai_reporter_id' => $reporter->id,
+            'ai_reporter_api_token' => Crypt::encryptString($apiToken),
+        ]);
 
         return redirect()->route('ai.reporter.dashboard');
     }
@@ -237,8 +231,20 @@ class AIReporterController extends Controller
                 ->with('error', 'Please login first.');
         }
 
+        $currentApiToken = '';
+        try {
+            $encryptedToken = session('ai_reporter_api_token');
+            if (is_string($encryptedToken) && $encryptedToken !== '') {
+                $currentApiToken = Crypt::decryptString($encryptedToken);
+            }
+        } catch (\Illuminate\Contracts\Encryption\DecryptException) {
+            // Old sessions may not contain the encrypted token; the dashboard
+            // asks the reporter to rotate it before making authenticated calls.
+        }
+
         return Theme::scope('templates.ai-reporter-dashboard', [
             'reporter' => $reporter,
+            'currentApiToken' => $currentApiToken,
             'publishingGuide' => $this->publishingGuide(),
         ], 'AI Reporter Dashboard - GenZ NewZ')->render();
     }
@@ -248,7 +254,7 @@ class AIReporterController extends Controller
      */
     public function logout()
     {
-        session()->forget('ai_reporter_id');
+        session()->forget(['ai_reporter_id', 'ai_reporter_api_token']);
         return redirect()->route('ai.reporter.login')
             ->with('success', 'Session terminated.');
     }
@@ -266,9 +272,10 @@ class AIReporterController extends Controller
 
         $newToken = 'ai_' . bin2hex(random_bytes(28)); // max 64 chars
         $reporter->update([
-            'api_token' => $newToken,
+            'api_token' => AIReporter::hashApiToken($newToken),
             'password' => bcrypt($newToken),
         ]);
+        session(['ai_reporter_api_token' => Crypt::encryptString($newToken)]);
 
         return response()->json([
             'success' => true,
@@ -331,7 +338,7 @@ class AIReporterController extends Controller
             'username' => $username,
             'email' => $email,
             'password' => bcrypt($apiToken),
-            'api_token' => $apiToken,
+            'api_token' => AIReporter::hashApiToken($apiToken),
             'description' => $storedDescription,
             'model_name' => $request->model_identifier,
             'website' => $request->endpoint,

@@ -47,17 +47,16 @@ class AutomationController extends Controller
     {
         $token = $request->header('X-API-Token') ?: $request->input('api_token');
         
-        if (!$token) {
+        if (!is_string($token) || $token === '' || strlen($token) > 64) {
             return response()->json([
                 'success' => false,
                 'message' => 'API token required. Provide it in X-API-Token header or api_token field.'
             ], 401);
         }
         
-        // Find active AI reporter by API token
-        $reporter = AIReporter::where('api_token', $token)
-            ->where('status', 'active')
-            ->first();
+        // New tokens are stored as SHA-256 digests; legacy plaintext tokens
+        // migrate to that format on their first successful use.
+        $reporter = AIReporter::findByApiToken($token);
         
         if (!$reporter) {
             return response()->json([
@@ -2074,7 +2073,7 @@ class AutomationController extends Controller
                 'username' => $username,
                 'email' => $email,
                 'password' => Hash::make($apiToken),
-                'api_token' => $apiToken,
+                'api_token' => AIReporter::hashApiToken($apiToken),
                 'seed_phrase_hash' => Hash::make($seedPhraseService->normalize($seedPhrase)),
                 'description' => $this->buildReporterRegistrationDescription(
                     $request->input('description'),
@@ -2150,7 +2149,7 @@ class AutomationController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'username' => 'nullable|string',
-            'api_token' => 'required|string',
+            'api_token' => 'required|string|max:64',
         ]);
 
         if ($validator->fails()) {
@@ -2164,18 +2163,16 @@ class AutomationController extends Controller
         $username = trim((string) $request->input('username'));
         $apiToken = trim($request->api_token);
 
-        $reporterQuery = AIReporter::where('status', 'active')
-            ->where('api_token', $apiToken);
+        $reporter = AIReporter::findByApiToken($apiToken);
 
-        if ($username !== '') {
-            $reporterQuery->where(function ($query) use ($username) {
-                $query->where('username', $username)
-                    ->orWhere('email', $username)
-                    ->orWhere('name', $username);
-            });
+        $reporterIdentities = $reporter ? array_map(
+            static fn ($identity) => Str::lower((string) $identity),
+            [$reporter->username, $reporter->email, $reporter->name]
+        ) : [];
+
+        if ($reporter && $username !== '' && ! in_array(Str::lower($username), $reporterIdentities, true)) {
+            $reporter = null;
         }
-
-        $reporter = $reporterQuery->first();
 
         if (!$reporter) {
             return response()->json([
@@ -2195,7 +2192,7 @@ class AutomationController extends Controller
                 'username' => $reporter->username,
                 'name' => $reporter->name,
                 'model_name' => $reporter->model_name,
-                'api_token' => $reporter->api_token,
+                'api_token' => $apiToken,
                 'status' => $reporter->status,
                 'posts_count' => $reporter->posts_count,
                 'last_login_at' => $reporter->last_login_at?->toIso8601String(),
@@ -2268,7 +2265,7 @@ class AutomationController extends Controller
 
         $newToken = 'ai_' . bin2hex(random_bytes(28)); // max 64 chars
         $reporter->update([
-            'api_token' => $newToken,
+            'api_token' => AIReporter::hashApiToken($newToken),
             'password' => Hash::make($newToken),
             'last_login_at' => now(),
         ]);
@@ -2339,7 +2336,7 @@ class AutomationController extends Controller
 
         $newToken = 'ai_' . bin2hex(random_bytes(28)); // max 64 chars
         $reporter->update([
-            'api_token' => $newToken,
+            'api_token' => AIReporter::hashApiToken($newToken),
             'password' => Hash::make($newToken),
         ]);
 
