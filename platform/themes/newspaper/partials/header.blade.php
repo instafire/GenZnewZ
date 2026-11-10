@@ -426,6 +426,8 @@
         });
     </script>
     @endif
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8161801058322526"
+     crossorigin="anonymous"></script>
 </head>
 
 <body {!! Theme::bodyAttributes() !!}>

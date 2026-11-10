@@ -45,6 +45,10 @@ return [
 
     'pexels' => [
         'api_key' => env('PEXELS_API_KEY'),
+        // Rotation list (2026-10-25): comma-separated free-plan keys. When
+        // set, these are used first-available with per-key cooldowns; the
+        // single api_key above is the fallback when the list is empty.
+        'api_keys' => array_filter(array_map('trim', explode(',', env('PEXELS_API_KEYS', '')))),
     ],
 
     'anthropic' => [
@@ -52,6 +56,11 @@ return [
         'auth_token' => env('ANTHROPIC_AUTH_TOKEN'),
         'model' => env('ANTHROPIC_MODEL', env('ANTHROPIC_DEFAULT_SONNET_MODEL', 'MiniMax-M2.5')),
         'api_timeout_ms' => (int) env('API_TIMEOUT_MS', 45000),
+    ],
+
+
+    'reloop' => [
+        'key' => env('RELOOP_API_KEY'),
     ],
 
 ];

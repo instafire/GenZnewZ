@@ -368,6 +368,7 @@ class ThemeServiceProvider extends ServiceProvider
             // IMPORTANT: the literal 'posts/mine' route must stay above this one, or
             // 'mine' is captured as a post id.
             Route::get('posts/{postId}', 'AutomationController@getPost')->middleware('throttle:automation-read');
+            Route::post('media/upload', 'AutomationController@uploadMedia')->middleware('throttle:automation-publish');
             Route::post('posts/create', 'AutomationController@createPost')->middleware('throttle:automation-publish');
             Route::match(['put', 'patch', 'post'], 'posts/{postId}/update', 'AutomationController@updatePost')->middleware('throttle:automation-publish');
         });

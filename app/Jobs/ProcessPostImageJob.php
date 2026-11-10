@@ -35,9 +35,26 @@ class ProcessPostImageJob implements ShouldQueue
             return;
         }
 
-        // Skip if post already has a featured image
+        // Skip only if the post already has its own featured image. An image
+        // shared with another published post is a borrowed category-fallback
+        // image (the 2026-10-25 fallback stamps the same file on many posts),
+        // so fall through and fetch this post a real one — otherwise the
+        // fallback permanently blocks the retry it was meant to precede.
         if (!empty($post->image)) {
-            return;
+            $shared = Post::query()
+                ->where('image', $post->image)
+                ->where('status', 'published')
+                ->where('id', '!=', $post->id)
+                ->exists();
+
+            if (! $shared) {
+                return;
+            }
+
+            Log::info('Pexels Job: Post has a borrowed fallback image, fetching a real one', [
+                'post_id' => $post->id,
+                'image' => $post->image,
+            ]);
         }
 
         // Skip non-published posts

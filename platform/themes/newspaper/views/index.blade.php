@@ -18,6 +18,14 @@
     $initialVisibleCategoryCount = $initialCategorySections->count();
     $hasMoreCategories = $renderableCategorySections->count() > $initialVisibleCategoryCount;
 
+    $topicCategories = \Botble\Blog\Models\Category::query()
+        ->withCount(['posts' => fn ($q) => $q->where('status', 'published')])
+        ->orderByDesc('posts_count')
+        ->get()
+        ->filter(fn ($c) => $c->posts_count > 0)
+        ->take(14)
+        ->values();
+
 @endphp
 
 <meta name="behavior-homepage" data-post-ids="{{ json_encode($latestPosts->pluck('id')->take(10)->values()->all()) }}">
@@ -74,6 +82,16 @@
 </nav>
 
 {{-- Primary news section --}}
+{{-- Topic chips: fast category discovery --}}
+<nav class="gzn-topics" aria-label="Browse topics">
+    <span class="gzn-topics-label">Browse topics</span>
+    <div class="gzn-topics-row">
+        @foreach ($topicCategories as $topicCategory)
+            <a class="gzn-topic-chip" href="{{ $topicCategory->url }}">{{ $topicCategory->name }} <span class="gzn-topic-count">{{ $topicCategory->posts_count }}</span></a>
+        @endforeach
+    </div>
+</nav>
+
 <div class="world-news-section-title" id="latest-stories" style="text-align:center;margin-left:auto;margin-right:auto">
     <p class="homepage-section-kicker">The latest signal</p>
     <span class="sr-only">Latest News From Around The World</span>
@@ -118,6 +136,10 @@
                     <span class="ai-card-author"><a href="{{ $post->author->url }}" class="author-link" onclick="event.stopPropagation();">{{ $post->author->name ?? 'GenZai' }}</a></span>
                     <span class="ai-card-views">{{ $post->views }} views</span>
                     <span class="ai-card-time">{{ $post->created_at->diffForHumans() }}</span>
+                    @php $gznWords = str_word_count(strip_tags((string) $post->content)); @endphp
+                    @if ($gznWords >= 80)
+                    <span class="ai-card-readtime">{{ max(1, (int) ceil($gznWords / 200)) }} min read</span>
+                    @endif
                 </div>
             </div>
         </article>
@@ -216,6 +238,10 @@
                                     <span>{{ $post->views }} views</span>
                                     <span>•</span>
                                     <span>{{ $post->created_at->format('F j, Y') }}</span>
+                                    @php $gznWords = str_word_count(strip_tags((string) $post->content)); @endphp
+                                    @if ($gznWords >= 80)
+                                    <span class="gzn-read-time">{{ max(1, (int) ceil($gznWords / 200)) }} min read</span>
+                                    @endif
                                 </div>
                             </div>
                         </article>
@@ -251,6 +277,10 @@
                                     <span>{{ $post->views }} views</span>
                                     <span>•</span>
                                     <span>{{ $post->created_at->diffForHumans() }}</span>
+                                    @php $gznWords = str_word_count(strip_tags((string) $post->content)); @endphp
+                                    @if ($gznWords >= 80)
+                                    <span class="gzn-read-time">{{ max(1, (int) ceil($gznWords / 200)) }} min read</span>
+                                    @endif
                                 </div>
                             </div>
                         </article>
@@ -260,8 +290,44 @@
         </section>
         @endif
 
+{{-- Jump back in: recently read stories, filled from localStorage by the script below --}}
+        <section class="gzn-recent" id="gzn-recent" hidden aria-labelledby="gzn-recent-title">
+            <div class="homepage-feed-heading">
+                <div>
+                    <p class="homepage-section-kicker">Your reading</p>
+                    <h2 id="gzn-recent-title">Jump back in</h2>
+                </div>
+            </div>
+            <div class="gzn-recent-row" id="gzn-recent-row"></div>
+        </section>
+
         @include('theme::partials.home-about')
 
+
+        {{-- LATEST NEWS BY CATEGORY - 3 articles from each category --}}
+        <div id="categories-container">
+            @foreach ($initialCategorySections as $index => $categorySection)
+                @include('theme::partials.home-category-section', [
+                    'category' => $categorySection['category'],
+                    'posts' => $categorySection['posts'],
+                    'index' => $index + 1,
+                ])
+            @endforeach
+        </div>
+        
+        @if ($hasMoreCategories)
+        <div class="load-more-container">
+            <button
+                id="loadMoreCategories"
+                class="load-more-btn"
+                data-endpoint="{{ route('home.categories.chunk') }}"
+                data-next-offset="{{ $initialVisibleCategoryCount }}"
+                data-limit="5"
+            >
+                Load More Categories
+            </button>
+        </div>
+        @endif
 {{-- Newsletter signup uses the existing newsletter subscription endpoint. --}}
         <section class="homepage-newsletter" aria-labelledby="homepage-newsletter-title">
             <div>
@@ -343,30 +409,6 @@
             </div>
         </section>
 
-        {{-- LATEST NEWS BY CATEGORY - 3 articles from each category --}}
-        <div id="categories-container">
-            @foreach ($initialCategorySections as $index => $categorySection)
-                @include('theme::partials.home-category-section', [
-                    'category' => $categorySection['category'],
-                    'posts' => $categorySection['posts'],
-                    'index' => $index + 1,
-                ])
-            @endforeach
-        </div>
-        
-        @if ($hasMoreCategories)
-        <div class="load-more-container">
-            <button
-                id="loadMoreCategories"
-                class="load-more-btn"
-                data-endpoint="{{ route('home.categories.chunk') }}"
-                data-next-offset="{{ $initialVisibleCategoryCount }}"
-                data-limit="5"
-            >
-                Load More Categories
-            </button>
-        </div>
-        @endif
     </main>
 
     <!-- Right Sidebar - NYT Style -->
@@ -438,4 +480,116 @@
 
 
 
+<script>
+(function () {
+    // Auto-load category sections as the reader scrolls; the button stays as a manual fallback.
+    var btn = document.getElementById('loadMoreCategories');
+    if (btn && 'IntersectionObserver' in window) {
+        var tryLoad = function () {
+            if (btn.style.display === 'none' || !document.body.contains(btn)) {
+                window.clearInterval(watchdog);
+                return;
+            }
+            var rect = btn.getBoundingClientRect();
+            var near = rect.top < window.innerHeight + 700 && rect.bottom > -700;
+            if (near && !btn.disabled && btn.dataset.loading !== 'true') {
+                btn.click();
+            }
+        };
+        var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    tryLoad();
+                }
+            });
+        }, { rootMargin: '700px 0px' });
+        io.observe(btn);
+        // The observer only fires on zone entry; if a load finishes while the
+        // button is already inside the margin, this watchdog chains the next one.
+        var watchdog = window.setInterval(tryLoad, 900);
+    }
+
+    // Topic chips: click-drag to scroll horizontally (scrollbar stays hidden).
+    var topicsRow = document.querySelector('.gzn-topics-row');
+    if (topicsRow) {
+        var dragStartX = 0;
+        var dragStartScroll = 0;
+        var dragging = false;
+        var dragged = false;
+        topicsRow.addEventListener('pointerdown', function (e) {
+            if (e.button !== 0) {
+                return;
+            }
+            dragging = true;
+            dragged = false;
+            dragStartX = e.clientX;
+            dragStartScroll = topicsRow.scrollLeft;
+            topicsRow.classList.add('is-dragging');
+        });
+        topicsRow.addEventListener('pointermove', function (e) {
+            if (!dragging) {
+                return;
+            }
+            var dx = e.clientX - dragStartX;
+            if (Math.abs(dx) > 5 && !dragged) {
+                dragged = true;
+                // Capture only once a real drag starts: capturing on pointerdown
+                // would retarget the click away from the chip and break plain clicks.
+                try {
+                    topicsRow.setPointerCapture(e.pointerId);
+                } catch (err) {}
+            }
+            topicsRow.scrollLeft = dragStartScroll - dx;
+        });
+        var endDrag = function () {
+            dragging = false;
+            topicsRow.classList.remove('is-dragging');
+        };
+        topicsRow.addEventListener('pointerup', endDrag);
+        topicsRow.addEventListener('pointercancel', endDrag);
+        topicsRow.addEventListener('dragstart', function (e) {
+            e.preventDefault();
+        });
+        // A drag must not end in a chip click.
+        topicsRow.addEventListener('click', function (e) {
+            if (dragged) {
+                e.preventDefault();
+                e.stopPropagation();
+                dragged = false;
+            }
+        }, true);
+    }
+
+    // Jump back in: render recently read stories stored by article pages.
+    var wrap = document.getElementById('gzn-recent');
+    var row = document.getElementById('gzn-recent-row');
+    if (wrap && row) {
+        try {
+            var cutoff = Date.now() - 30 * 24 * 3600 * 1000;
+            var items = JSON.parse(localStorage.getItem('gzn_recent_reads') || '[]')
+                .filter(function (i) { return i && i.url && i.title && i.ts > cutoff; })
+                .slice(0, 4);
+            items.forEach(function (i) {
+                var card = document.createElement('a');
+                card.className = 'gzn-recent-card';
+                card.href = i.url;
+                if (i.image) {
+                    var img = document.createElement('img');
+                    img.src = i.image;
+                    img.alt = '';
+                    img.loading = 'lazy';
+                    card.appendChild(img);
+                }
+                var label = document.createElement('span');
+                label.textContent = i.title;
+                card.appendChild(label);
+                row.appendChild(card);
+            });
+            if (items.length) {
+                wrap.hidden = false;
+            }
+        } catch (e) {}
+    }
+})();
+</script>
 {!! Theme::partial('footer') !!}

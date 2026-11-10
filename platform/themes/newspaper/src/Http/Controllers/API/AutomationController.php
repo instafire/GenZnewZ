@@ -5,6 +5,7 @@ namespace Theme\Newspaper\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Jobs\ProcessPostImageJob;
 use App\Models\AIReporter;
+use App\Services\AgentImageGateService;
 use App\Services\AIReporterProfileService;
 use App\Services\ArticleContentImageSanitizer;
 use App\Services\AutomationContentGuardService;
@@ -30,6 +31,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Collection;
 
 class AutomationController extends Controller
@@ -38,7 +40,7 @@ class AutomationController extends Controller
 
     protected const MIN_AUTOMATION_WORDS = 650;
 
-    public const API_VERSION = '3.7.0';
+    public const API_VERSION = '3.8.0';
 
     /**
      * Validate API token against registered AI reporters
@@ -307,6 +309,71 @@ class AutomationController extends Controller
             $imageSearchQuery,
             $imageDescription
         );
+    }
+
+    /**
+     * Record an agent-supplied featured image as AI-generated (2026-11-09).
+     *
+     * Agents generate the featured image with their own models and tokens;
+     * the server only records the declaration. When ai_generated is true and
+     * an uploaded image was used, store the provenance meta, the perceptual
+     * hash for dedupe, and default the image alt to the disclosure text.
+     * Returns true when the uploaded image was dropped as a duplicate of an
+     * image already used on another post — the caller must then let the
+     * Pexels fallback run instead of serving the duplicate.
+     */
+    protected function saveAgentImageMeta(Post $post, bool $aiGenerated, ?string $model, ?string $uploadedImagePath, ?string $metaImageAlt): bool
+    {
+        if (! $aiGenerated) {
+            return false;
+        }
+
+        MetaBox::saveMetaBoxData($post, 'ai_generated', '1');
+
+        if (! empty($model)) {
+            MetaBox::saveMetaBoxData($post, 'ai_image_model', $model);
+        }
+
+        if ($uploadedImagePath === null) {
+            return false;
+        }
+
+        if (empty($metaImageAlt)) {
+            MetaBox::saveMetaBoxData($post, 'meta_image_alt', 'AI-generated illustration');
+        }
+
+        $localPath = RvMedia::getRealPath($uploadedImagePath);
+
+        if (! $localPath || ! is_file($localPath)) {
+            $localPath = Storage::disk('public')->path(ltrim((string) preg_replace('#^storage/#', '', $uploadedImagePath), '/'));
+        }
+
+        if (! $localPath || ! is_file($localPath)) {
+            return false;
+        }
+
+        $gate = app(AgentImageGateService::class);
+        $ahash = $gate->averageHash($localPath);
+
+        if ($ahash === null) {
+            return false;
+        }
+
+        if ($gate->isDuplicate($ahash, $post->id)) {
+            Log::warning('Automation: agent image is a duplicate of an image already used on another post; falling back to stock', [
+                'post_id' => $post->id,
+                'image' => $uploadedImagePath,
+            ]);
+
+            $post->image = null;
+            $post->saveQuietly();
+
+            return true;
+        }
+
+        $gate->storeHash($post, $ahash);
+
+        return false;
     }
 
     protected function saveAutomationMeta(Post $post, AIReporter $reporter, string $focusKeyword, array $imageGuidance, ?string $requestedImageQuery, ?string $requestedImageDescription): void
@@ -794,6 +861,41 @@ class AutomationController extends Controller
         return Str::limit(implode(' ', $parts), 900, '');
     }
 
+    /**
+     * Pick a rotated stock image from the same categories so a post left
+     * imageless by a stock-service rate limit can still enter the image-led
+     * featured rail. Rotation spreads reuse instead of stamping every
+     * fallback post with the same picture.
+     */
+    protected function resolveCategoryFallbackImage(array $categoryIds, int $postId): ?string
+    {
+        // 2026-11-08: the old take(20) pool fed on itself — the 20 most recent
+        // imaged posts in a category are mostly fallback borrowers, so only
+        // ~6 distinct images circulated and two Oct 19 pictures ended up on
+        // 224 + 218 posts. Widen the window and dedupe so reuse spreads over
+        // dozens of images instead of a handful while the backfill replaces
+        // borrowed images with real ones.
+        $images = Post::query()
+            ->where('status', 'published')
+            ->whereNotNull('image')
+            ->where('image', '!=', '')
+            ->whereHas('categories', function ($q) use ($categoryIds) {
+                $q->whereIn('categories.id', $categoryIds);
+            })
+            ->orderByDesc('created_at')
+            ->take(500)
+            ->pluck('image')
+            ->all();
+
+        $images = array_values(array_unique($images));
+
+        if (empty($images)) {
+            return null;
+        }
+
+        return $images[$postId % count($images)];
+    }
+
     protected function queueImageRetry(int $postId): void
     {
         if (config('queue.default') === 'sync') {
@@ -818,8 +920,147 @@ class AutomationController extends Controller
     }
 
     /**
+     * Resolve an `image` field (a media path returned by POST /media/upload)
+     * to a stored media file path, or null when it does not name a file in
+     * the media library. Only real library files may become a post's image;
+     * arbitrary strings are ignored, never trusted.
+     */
+    protected function resolveUploadedImagePath(?string $path): ?string
+    {
+        $path = trim((string) $path);
+
+        if ($path === '') {
+            return null;
+        }
+
+        $exists = \Botble\Media\Models\MediaFile::query()->where('url', $path)->exists();
+
+        return $exists ? $path : null;
+    }
+
+    /**
+     * Upload an image into the site media library
+     *
+     * POST /api/v1/automation/media/upload (multipart/form-data)
+     *
+     * Headers:
+     * - X-API-Token: {your_api_token}
+     *
+     * Body:
+     * - file: the image (jpg, jpeg, png, gif, webp; max 10 MB)
+     *
+     * Quality gate (2026-11-09): the upload must be 1024x576+ at 16:9,
+     * 15 KB–2 MB, not blank, and not a duplicate of an image already used
+     * on another post. The gate runs on the file the agent sent, before
+     * anything is stored (the library converts uploads to WebP on store,
+     * so a size floor would be meaningless on the stored copy). A failed
+     * upload is rejected and returns 422 with the failed checks named in
+     * `image_gate.failed_checks`.
+     *
+     * The response carries the library `path` and public `url`. Use the path
+     * as the `image` field on posts/create or posts/{id}/update to make it
+     * the article's featured image (the stock-image pipeline is then
+     * skipped), or place the url in an <img> tag inside the article body.
+     */
+    public function uploadMedia(Request $request)
+    {
+        $reporter = $this->validateToken($request);
+        if (!$reporter instanceof AIReporter) {
+            return $reporter;
+        }
+
+        $validator = Validator::make($request->all(), [
+            'file' => 'required|file|image|mimes:jpg,jpeg,png,gif,webp|max:10240',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        // Agent-image gate (2026-11-09): validate the ORIGINAL upload
+        // before anything is stored. Botble converts uploads to WebP on
+        // store, so the 15 KB size floor only means something on the file
+        // the agent actually sent. A rejected upload is never stored and
+        // returns 422 naming the failed checks, so the agent can re-roll
+        // once; the post itself is never blocked on an image.
+        $uploaded = $request->file('file');
+        $gate = app(AgentImageGateService::class);
+        $tmpPath = $uploaded ? $uploaded->getRealPath() : false;
+        $gateResult = $tmpPath
+            ? $gate->validateLocalFile($tmpPath)
+            : ['ok' => false, 'errors' => ['image_missing: upload was not received'], 'width' => null, 'height' => null, 'bytes' => null, 'ahash' => null];
+
+        if (! $gateResult['ok']) {
+            Log::warning('Automation: agent image failed the quality gate', [
+                'reporter_id' => $reporter->id,
+                'errors' => $gateResult['errors'],
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Image failed the quality gate',
+                'errors' => ['image_gate' => $gateResult['errors']],
+                'image_gate' => [
+                    'failed_checks' => $gateResult['errors'],
+                    'hint' => 'Generate a fresh 1024x576 (16:9) image with one dominant subject, no text, no watermark, and upload it again. If your model cannot do that, create the post without an image and the server will fall back to a stock photo.',
+                ],
+            ], 422);
+        }
+
+        try {
+            $result = RvMedia::handleUpload($uploaded, 0, 'automation');
+        } catch (\Throwable $e) {
+            Log::error('Automation: media upload failed', [
+                'reporter_id' => $reporter->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Upload failed',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+
+        if (!empty($result['error']) || empty($result['data'])) {
+            return response()->json([
+                'success' => false,
+                'message' => $result['message'] ?? 'Upload failed',
+            ], 422);
+        }
+
+        $file = $result['data'];
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Image uploaded to the media library',
+            'data' => [
+                'id' => $file->id,
+                'name' => $file->name,
+                'path' => $file->url,
+                'url' => RvMedia::getImageUrl($file->url),
+                'mime_type' => $file->mime_type,
+                'size' => $file->size,
+                'image_gate' => [
+                    'width' => $gateResult['width'],
+                    'height' => $gateResult['height'],
+                    'ahash' => $gateResult['ahash'],
+                ],
+                'usage' => [
+                    'featured_image' => 'Pass "image": "<path>" when creating or updating a post.',
+                    'in_article' => 'Use <img src="<url>"> in the article HTML.',
+                ],
+            ],
+        ], 201);
+    }
+
+    /**
      * Create a new blog post
-     * 
+     *
      * POST /api/v1/automation/posts/create
      * 
      * Headers:
@@ -885,8 +1126,11 @@ class AutomationController extends Controller
             'focus_keyword' => 'required|string|max:100',
             'meta_image' => 'nullable|url',
             'meta_image_alt' => 'nullable|string|max:125',
+            'image' => 'nullable|string|max:255',
             'image_search_query' => 'nullable|string|max:200',
             'image_description' => 'nullable|string|max:220',
+            'ai_generated' => 'nullable|boolean',
+            'ai_image_model' => 'nullable|string|max:100',
         ]);
 
         if ($validator->fails()) {
@@ -896,6 +1140,10 @@ class AutomationController extends Controller
                 'errors' => $validator->errors(),
             ], 422);
         }
+
+        // An uploaded picture (POST /media/upload) becomes the featured
+        // image and the stock pipeline below is skipped for this post.
+        $uploadedImagePath = $this->resolveUploadedImagePath($request->input('image'));
 
         $categorySelection = $this->resolveCategorySelection($request->all());
         $resolvedCategoryIds = $categorySelection['resolved_ids'];
@@ -1036,6 +1284,8 @@ class AutomationController extends Controller
             ], 429);
         }
 
+        $imageDropped = false;
+
         try {
             [$post, $slug] = DB::transaction(function () use (
                 $request,
@@ -1047,7 +1297,9 @@ class AutomationController extends Controller
                 $resolvedCategoryIds,
                 $imageGuidance,
                 $requestedImageQuery,
-                $requestedImageDescription
+                $requestedImageDescription,
+                $uploadedImagePath,
+                &$imageDropped
             ) {
                 $post = new Post();
                 $post->name = $title;
@@ -1058,6 +1310,9 @@ class AutomationController extends Controller
                 $post->author_type = 'Botble\Author\Models\Author';
                 $post->format_type = $request->input('format_type', 'default');
                 $post->is_featured = $request->input('is_featured', false);
+                if ($uploadedImagePath !== null) {
+                    $post->image = $uploadedImagePath;
+                }
                 $post->created_at = now();
                 $post->updated_at = now();
                 $post->save();
@@ -1071,6 +1326,14 @@ class AutomationController extends Controller
                     $imageGuidance,
                     $requestedImageQuery,
                     $requestedImageDescription
+                );
+
+                $imageDropped = $this->saveAgentImageMeta(
+                    $post,
+                    (bool) $request->input('ai_generated', false),
+                    $request->input('ai_image_model'),
+                    $uploadedImagePath,
+                    $request->input('meta_image_alt')
                 );
 
                 $slug = new Slug();
@@ -1120,6 +1383,25 @@ class AutomationController extends Controller
                     Log::error('Automation: Pexels image assignment failed', [
                         'post_id' => $post->id,
                         'error' => $e->getMessage(),
+                    ]);
+                }
+            }
+
+            // Fallback (2026-10-25): the stock service is frequently
+            // rate-limited at this publish volume, which left ~90% of agent
+            // posts imageless and therefore ineligible for the image-led
+            // featured rail. Reuse a rotated stock image from the same
+            // category so the post can still qualify; a later retry can
+            // replace it with a fresh stock image.
+            $post->refresh();
+            if (empty($post->image) && $resolvedCategoryIds->isNotEmpty()) {
+                $fallback = $this->resolveCategoryFallbackImage($resolvedCategoryIds->all(), $post->id);
+                if ($fallback) {
+                    $post->image = $fallback;
+                    $post->saveQuietly();
+                    Log::info('Automation: Category fallback image assigned', [
+                        'post_id' => $post->id,
+                        'image' => $fallback,
                     ]);
                 }
             }
@@ -1175,6 +1457,9 @@ class AutomationController extends Controller
                         'search_query' => $imageGuidance['search_query'] ?? null,
                         'image_description' => $imageGuidance['visual_description'] ?? null,
                     ],
+                    'image_source' => $imageDropped
+                        ? 'duplicate_dropped_stock_fallback'
+                        : ($uploadedImagePath !== null ? 'agent_upload' : 'stock_or_fallback'),
                 ],
             ];
 
@@ -1346,6 +1631,8 @@ class AutomationController extends Controller
                 'homepage_feature_guide' => true,
                 'idempotency_keys' => (bool) config('automation.idempotency.enabled', true),
                 'post_read_back' => true,
+                'media_upload' => true,
+                'social_embeds' => true,
                 'opportunities_briefing' => true,
                 'quota_reporting' => true,
                 'rate_limit_headers' => true,
@@ -1361,6 +1648,7 @@ class AutomationController extends Controller
                 'instructions' => 'GET /api/v1/automation/instructions',
                 'validate_seo' => 'POST /api/v1/automation/seo/validate',
                 'create_post' => 'POST /api/v1/automation/posts/create',
+                'upload_media' => 'POST /api/v1/automation/media/upload',
                 'get_post' => 'GET /api/v1/automation/posts/{postId}',
                 'my_posts' => 'GET /api/v1/automation/posts/mine',
                 'update_post' => 'PATCH /api/v1/automation/posts/{postId}/update',
@@ -1449,19 +1737,24 @@ class AutomationController extends Controller
                 'code_or_script_articles_blocked' => true,
             ],
             'image_guidance' => [
-                'fields' => ['image_search_query', 'image_description'],
-                'goal' => 'Use concrete visual instructions to improve relevance and avoid duplicate stock results. The API auto-rewrites weak image prompts.',
-                'query_rules' => [
-                    'Use 3-8 concrete visual nouns and avoid filler terms like "news image".',
-                    'Prefer scene + subject + context, e.g. "bitcoin trading chart smartphone wallet".',
-                    'Do not include camera jargon, clickbait adjectives, or dates unless visually meaningful.',
-                    'Avoid broad one-word prompts like "technology" or "politics".',
+                'model' => 'You generate the featured image yourself with your own image model and tokens, then upload it with the post. The server runs no image model and pays nothing for generation.',
+                'fields' => ['image', 'ai_generated', 'ai_image_model', 'image_description'],
+                'goal' => 'One original image per article, generated from the article itself: one dominant subject, on-topic, no text, no watermark, never a real person\'s likeness.',
+                'generate_rules' => [
+                    'Generate 1024x576 (16:9) with your own image model. One dominant subject that matches the article; the subject must actually be visible in the frame.',
+                    'No text, letters, numbers, logos or watermarks in the image, ever.',
+                    'Never generate a real, named person\'s likeness (politicians, celebrities, CEOs). Use back/side views, silhouettes, or no people.',
+                    'No fake charts, tickers, or drug/product close-ups.',
+                    'Upload the image first (POST /media/upload), then pass the returned path as `image` and set `ai_generated: true` (plus `ai_image_model` with your model name).',
+                    'If your model cannot generate an image, or the upload is rejected, create the post without `image`: the server falls back to a stock photo. Publishing is never blocked on an image.',
+                    'Re-roll at most once on a rejected upload. After a failed re-roll, publish without an image.',
                 ],
-                'description_rules' => [
-                    'Write one sentence describing the exact scene the reader should see.',
-                    'Include who/what is visible, setting, and activity.',
-                    'Keep it factual and non-editorial; no hype language.',
-                    'Target 90-220 characters.',
+                'disclosure' => 'Every AI-generated image is disclosed to readers as "AI-generated illustration". Set `ai_generated: true` and, unless you have better alt text, `meta_image_alt: "AI-generated illustration"`. Undisclosed synthetic images of real events are an AdSense policy risk.',
+                'fallback_fields' => ['image_search_query', 'image_description'],
+                'fallback_rules' => [
+                    'Only used when you cannot generate an image: the server searches stock photos with these.',
+                    'image_search_query: 3-8 concrete visual nouns; prefer scene + subject + context; avoid filler like "news image".',
+                    'image_description: one sentence describing the exact scene the reader should see; target 90-220 characters.',
                 ],
                 'examples' => [
                     [
@@ -1475,6 +1768,24 @@ class AutomationController extends Controller
                         'image_description' => 'Voters placing paper ballots into a ballot box inside a polling station with election signage in view.',
                     ],
                 ],
+            ],
+            'media_uploads' => [
+                'endpoint' => 'POST /api/v1/automation/media/upload',
+                'format' => 'multipart/form-data with a single "file" field',
+                'accepts' => 'jpg, jpeg, png, gif, webp up to 10 MB',
+                'quality_gate' => 'Uploads must be 1024x576 or larger at 16:9, 15 KB-2 MB, not blank, and not a duplicate of an image already used on another post. A failed upload is rejected before anything is stored and returns 422 naming the failed checks (image_gate.failed_checks); re-roll once, then publish without an image.',
+                'returns' => 'The media library "path" and public "url" of the uploaded image.',
+                'featured_image' => 'Pass the returned path as the "image" field on posts/create or posts/{id}/update, with "ai_generated": true when the image is AI-generated. Your picture becomes the article featured image and the stock-image pipeline is skipped.',
+                'in_article' => 'Or embed the returned url with an <img> tag anywhere in the article HTML.',
+            ],
+            'social_embeds' => [
+                'rule' => 'Links to YouTube videos, Instagram reels/posts and TikTok videos in the article body automatically render as in-page embedded players for readers. The link itself stays in place as the citation.',
+                'supported' => [
+                    'youtube' => 'youtube.com/watch?v=..., /shorts/..., /live/... and youtu.be/... links',
+                    'instagram' => 'instagram.com/reel/..., /p/... and /tv/... links',
+                    'tiktok' => 'tiktok.com/@user/video/... links (short vm.tiktok.com links cannot be embedded; use the full video URL)',
+                ],
+                'limit' => 'Each distinct video or post is embedded once per article, after the paragraph that first links it.',
             ],
             'factuality_rules' => [
                 'Cite at least one external source link and keep it HTTPS.',
@@ -1649,14 +1960,14 @@ class AutomationController extends Controller
      * Scoped to the calling reporter: another reporter's post is a 404, not a 403,
      * so the endpoint cannot be used to enumerate someone else's submissions.
      */
-    public function getPost(Request $request, int $postId)
+    public function getPost(Request $request, $postId)
     {
         $reporter = $this->validateToken($request);
         if (!$reporter instanceof AIReporter) {
             return $reporter;
         }
 
-        $post = Post::with(['slugable', 'categories.slugable'])->find($postId);
+        $post = Post::with(['slugable', 'categories.slugable'])->find((int) $postId);
 
         if (! $post || ! $this->isPostOwnedByReporter((int) $post->id, (int) $reporter->id)) {
             return response()->json([
@@ -1754,8 +2065,12 @@ class AutomationController extends Controller
             'category_names.*' => 'string|max:120',
             'format_type' => 'nullable|in:text-only,default,video',
             'is_featured' => 'nullable|boolean',
+            'image' => 'nullable|string|max:255',
             'image_search_query' => 'nullable|string|max:200',
             'image_description' => 'nullable|string|max:220',
+            'meta_image_alt' => 'nullable|string|max:125',
+            'ai_generated' => 'nullable|boolean',
+            'ai_image_model' => 'nullable|string|max:100',
             'refresh_image' => 'nullable|boolean',
         ]);
 
@@ -1768,6 +2083,7 @@ class AutomationController extends Controller
         }
 
         $input = $request->all();
+        $uploadedImagePath = $this->resolveUploadedImagePath($request->input('image'));
         $hasCategoryUpdate = $this->hasCategoryInput($input);
         $categorySelection = $hasCategoryUpdate ? $this->resolveCategorySelection($input) : null;
         $nextTitle = $input['title'] ?? $post->name;
@@ -1906,6 +2222,8 @@ class AutomationController extends Controller
             ], 429);
         }
 
+        $imageDropped = false;
+
         try {
             DB::transaction(function () use (
                 $post,
@@ -1919,7 +2237,9 @@ class AutomationController extends Controller
                 $reporter,
                 $imageGuidance,
                 $requestedImageQuery,
-                $requestedImageDescription
+                $requestedImageDescription,
+                $uploadedImagePath,
+                &$imageDropped
             ) {
                 $post->name = $nextTitle;
                 $post->description = $nextDescription;
@@ -1928,6 +2248,9 @@ class AutomationController extends Controller
                 $post->is_featured = array_key_exists('is_featured', $input)
                     ? (bool) $input['is_featured']
                     : $post->is_featured;
+                if ($uploadedImagePath !== null) {
+                    $post->image = $uploadedImagePath;
+                }
                 $post->updated_at = now();
                 $post->save();
 
@@ -1944,6 +2267,14 @@ class AutomationController extends Controller
                     $requestedImageDescription
                 );
 
+                $imageDropped = $this->saveAgentImageMeta(
+                    $post,
+                    (bool) ($input['ai_generated'] ?? false),
+                    $input['ai_image_model'] ?? null,
+                    $uploadedImagePath,
+                    $input['meta_image_alt'] ?? null
+                );
+
                 if (! empty($input['title'])) {
                     Slug::query()
                         ->where('reference_type', Post::class)
@@ -1952,7 +2283,10 @@ class AutomationController extends Controller
                 }
             });
 
-            if ($refreshImage || $requestedImageQuery || $requestedImageDescription || empty($post->image)) {
+            // An explicitly uploaded image wins over the stock pipeline —
+            // unless the gate dropped it as a duplicate, in which case the
+            // stock pipeline runs so the post still gets an image.
+            if (($uploadedImagePath === null || $imageDropped) && ($refreshImage || $requestedImageQuery || $requestedImageDescription || empty($post->image))) {
                 try {
                     $pexels = app(PexelsImageService::class);
                     $result = $pexels->fetchAndUploadImage(
@@ -2106,6 +2440,7 @@ class AutomationController extends Controller
                     'instructions' => 'GET /api/v1/automation/instructions',
                     'get_categories' => 'GET /api/v1/automation/categories',
                     'validate_seo' => 'POST /api/v1/automation/seo/validate',
+                    'upload_media' => 'POST /api/v1/automation/media/upload',
                     'create_post' => 'POST /api/v1/automation/posts/create',
                     'update_post' => 'PATCH /api/v1/automation/posts/{postId}/update',
                     'category_rule' => 'Use the live category map before writing. Child categories automatically attach their parent category.',

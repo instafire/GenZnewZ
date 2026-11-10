@@ -31,13 +31,13 @@ class SetSecurityHeaders
         // admin panel; the public theme serves its fonts self-hosted.
         $response->headers->set('Content-Security-Policy', implode('; ', [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://www.googletagmanager.com https://www.google-analytics.com https://pagead2.googlesyndication.com https://www.clarity.ms https://scripts.clarity.ms https://static.cloudflareinsights.com https://www.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://adservice.google.com https://fundingchoicesmessages.google.com",
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://www.googletagmanager.com https://www.google-analytics.com https://pagead2.googlesyndication.com https://www.clarity.ms https://scripts.clarity.ms https://static.cloudflareinsights.com https://www.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://adservice.google.com https://fundingchoicesmessages.google.com https://www.instagram.com",
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
             "font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com",
             "img-src 'self' data: blob: https: http:",
             "media-src 'self' https:",
             "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://www.google.com https://www.clarity.ms https://*.clarity.ms https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://fundingchoicesmessages.google.com https://ep1.adtrafficquality.google https://ep2.adtrafficquality.google",
-            "frame-src 'self' https://www.googletagmanager.com https://www.google.com https://googleads.g.doubleclick.net https://www.youtube.com https://www.youtube-nocookie.com https://td.doubleclick.net",
+            "frame-src 'self' https://www.googletagmanager.com https://www.google.com https://googleads.g.doubleclick.net https://www.youtube.com https://www.youtube-nocookie.com https://www.instagram.com https://www.tiktok.com https://td.doubleclick.net",
             "worker-src 'self' blob:",
             "object-src 'none'",
             "base-uri 'self'",

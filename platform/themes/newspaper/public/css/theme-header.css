@@ -137,6 +137,8 @@
             color: #121212;
             text-decoration: none;
             transition: color 0.2s;
+            display: inline-flex;
+            align-items: center;
         }
         
         .header-tools a:hover {
@@ -858,8 +860,14 @@
                 position: absolute;
                 left: 50%;
                 transform: translateX(-50%);
-                width: 96px;
+                width: 95px;
+                height: 42px;
                 display: block;
+            }
+
+            .genz-logo {
+                width: 95px;
+                height: 42px;
             }
             
             .header-nav {

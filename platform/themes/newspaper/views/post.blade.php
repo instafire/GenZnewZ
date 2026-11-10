@@ -1,5 +1,6 @@
 @php
     use App\Services\ArticleContentImageSanitizer;
+    use App\Services\ArticleSocialEmbedService;
     use App\Services\PostSeoPresentationService;
     use Botble\SeoHelper\Facades\SeoHelper;
 
@@ -28,6 +29,9 @@
     $normalizedArticleBody = $articleContentSanitizer->sanitize((string) $post->content);
     $normalizedArticleBody = preg_replace('/<\s*\/\s*h1\s*>/i', '</h2>', $normalizedArticleBody);
     $normalizedArticleBody = preg_replace('/<h1\b([^>]*)>/i', '<h2$1>', $normalizedArticleBody);
+    // Linked YouTube / Instagram / TikTok content plays in-page: append an
+    // embedded player after the block that first links each distinct URL.
+    $normalizedArticleBody = app(ArticleSocialEmbedService::class)->transform($normalizedArticleBody);
 
     SeoHelper::setTitle($postSeo->buildTitle($post));
     SeoHelper::setDescription($postSeo->buildDescription($post));
@@ -69,7 +73,7 @@
         @if ($post->image)
             @include('theme::partials.image', [
                 'image' => $post->image,
-                'alt' => $post->name,
+                'alt' => !empty($post->getMetaData('ai_generated', true)) ? 'AI-generated illustration: ' . $post->name : $post->name,
                 'size' => 'large',
                 'class' => 'article-hero-image',
                 'imgClass' => 'article-hero-image',
@@ -88,10 +92,32 @@
                     on <a href="{{ $pexelsPhotoUrl }}" target="_blank" rel="noopener noreferrer">Pexels</a>
                 </p>
             @endif
+            @if (!empty($post->getMetaData('ai_generated', true)))
+                <p class="ai-image-attribution">AI-generated illustration</p>
+            @endif
         @endif
 
         {{-- Read time, share/save controls and the auto-generated outline. --}}
         @include('theme::partials.article-tools', ['post' => $post, 'normalizedArticleBody' => $normalizedArticleBody])
+        <script>
+        (function () {
+            try {
+                var url = window.location.href.split('#')[0];
+                var titleMeta = document.querySelector('meta[property="og:title"]');
+                var imageMeta = document.querySelector('meta[property="og:image"]');
+                var key = 'gzn_recent_reads';
+                var items = JSON.parse(localStorage.getItem(key) || '[]')
+                    .filter(function (i) { return i && i.url !== url; });
+                items.unshift({
+                    url: url,
+                    title: titleMeta ? titleMeta.content : document.title,
+                    image: imageMeta ? imageMeta.content : '',
+                    ts: Date.now()
+                });
+                localStorage.setItem(key, JSON.stringify(items.slice(0, 8)));
+            } catch (e) {}
+        })();
+        </script>
 
         <div class="article-body" role="article" aria-label="Article content">
             {!! $normalizedArticleBody !!}

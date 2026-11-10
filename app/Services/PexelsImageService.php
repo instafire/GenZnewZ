@@ -13,9 +13,9 @@ use Illuminate\Support\Str;
 
 class PexelsImageService
 {
-    protected string $apiKey;
+    /** @var string[] Pexels API keys, first available wins. */
+    protected array $apiKeys;
     protected string $baseUrl = 'https://api.pexels.com/v1';
-    protected string $rateLimitCacheKey = 'pexels_rate_limit_cooldown';
 
     /**
      * Topic-to-visual mapping: translates abstract article subjects into
@@ -186,12 +186,47 @@ class PexelsImageService
 
     public function __construct()
     {
-        $this->apiKey = config('services.pexels.api_key', env('PEXELS_API_KEY', ''));
+        // Multi-key rotation (2026-10-25): PEXELS_API_KEYS is a
+        // comma-separated list of free-plan keys; the first key that is not
+        // cooling down serves the request, and a 429/401 cools only that key
+        // for a while instead of stopping all image searches. Falls back to
+        // the legacy single PEXELS_API_KEY when no list is configured.
+        $listed = config('services.pexels.api_keys', []);
+        if (! is_array($listed)) {
+            $listed = array_filter(array_map('trim', explode(',', (string) $listed)));
+        }
+        if (empty($listed)) {
+            $single = config('services.pexels.api_key', env('PEXELS_API_KEY', ''));
+            $listed = $single !== '' ? [(string) $single] : [];
+        }
+        $this->apiKeys = array_values(array_unique(array_filter(array_map('trim', $listed))));
+    }
+
+    /**
+     * Per-key cooldown cache key. Only a fingerprint of the key is stored,
+     * never the key itself.
+     */
+    protected function keyCooldownKey(string $key): string
+    {
+        return 'pexels_rate_limit_cooldown_' . md5($key);
+    }
+
+    /**
+     * Keys that are not currently cooling down, in configured order.
+     *
+     * @return string[]
+     */
+    protected function availableKeys(): array
+    {
+        return array_values(array_filter(
+            $this->apiKeys,
+            fn (string $key) => (int) Cache::get($this->keyCooldownKey($key), 0) <= time()
+        ));
     }
 
     public function isCoolingDown(): bool
     {
-        return (int) Cache::get($this->rateLimitCacheKey, 0) > time();
+        return ! empty($this->apiKeys) && empty($this->availableKeys());
     }
 
     /**
@@ -205,23 +240,25 @@ class PexelsImageService
      */
     public function searchPhoto(string $query, string $orientation = 'landscape', int $perPage = 5, int $page = 1): ?array
     {
-        if (empty($this->apiKey)) {
+        if (empty($this->apiKeys)) {
             Log::warning('Pexels: API key not configured');
             return null;
         }
 
-        $cooldownUntil = (int) Cache::get($this->rateLimitCacheKey, 0);
-        if ($cooldownUntil > time()) {
-            return null;
+        // Include page in cache key to allow different results. Only
+        // successful searches are cached: the old Cache::remember wrapper
+        // also cached nulls, so a 429 poisoned that query for 30 minutes
+        // even after the cooldown expired.
+        $cacheKey = 'pexels_v3_' . md5($query . $orientation . $perPage . $page);
+        $cached = Cache::get($cacheKey);
+        if (is_array($cached) && ! empty($cached['photos'])) {
+            return $cached;
         }
 
-        // Include page in cache key to allow different results
-        $cacheKey = 'pexels_v3_' . md5($query . $orientation . $perPage . $page);
-
-        return Cache::remember($cacheKey, 1800, function () use ($query, $orientation, $perPage, $page) {
+        foreach ($this->availableKeys() as $keyIndex => $key) {
             try {
                 $response = Http::withHeaders([
-                    'Authorization' => $this->apiKey,
+                    'Authorization' => $key,
                 ])->get($this->baseUrl . '/search', [
                     'query' => $query,
                     'orientation' => $orientation,
@@ -229,45 +266,6 @@ class PexelsImageService
                     'page' => $page,
                     'size' => 'large',
                 ]);
-
-                if ($response->failed()) {
-                    if ($response->status() === 429) {
-                        Cache::put($this->rateLimitCacheKey, time() + 300, 300);
-                        Log::warning('Pexels: Rate limit reached, entering cooldown', [
-                            'query' => $query,
-                        ]);
-
-                        return null;
-                    }
-
-                    Log::error('Pexels: API request failed', [
-                        'status' => $response->status(),
-                        'query' => $query,
-                    ]);
-                    return null;
-                }
-
-                $data = $response->json();
-
-                if (empty($data['photos'])) {
-                    return null;
-                }
-
-                // Return all photos so caller can choose
-                return [
-                    'photos' => array_map(function($photo) {
-                        return [
-                            'id' => $photo['id'],
-                            'url' => $photo['src']['large2x'] ?? $photo['src']['large'],
-                            'original_url' => $photo['src']['original'],
-                            'photographer' => $photo['photographer'],
-                            'photographer_url' => $photo['photographer_url'],
-                            'pexels_url' => $photo['url'],
-                            'alt' => $photo['alt'] ?? '',
-                        ];
-                    }, $data['photos']),
-                    'total_results' => $data['total_results'] ?? 0,
-                ];
             } catch (\Exception $e) {
                 Log::error('Pexels: Exception during search', [
                     'message' => $e->getMessage(),
@@ -275,7 +273,63 @@ class PexelsImageService
                 ]);
                 return null;
             }
-        });
+
+            if ($response->status() === 429) {
+                // Cool only this key, then rotate to the next one.
+                Cache::put($this->keyCooldownKey($key), time() + 300, 300);
+                Log::warning('Pexels: Rate limit reached, rotating key', [
+                    'query' => $query,
+                    'key_index' => $keyIndex,
+                ]);
+                continue;
+            }
+
+            if ($response->status() === 401) {
+                // A rejected key is not going to recover on retry; park it
+                // for an hour and rotate.
+                Cache::put($this->keyCooldownKey($key), time() + 3600, 3600);
+                Log::warning('Pexels: Key rejected (401), rotating key', [
+                    'query' => $query,
+                    'key_index' => $keyIndex,
+                ]);
+                continue;
+            }
+
+            if ($response->failed()) {
+                Log::error('Pexels: API request failed', [
+                    'status' => $response->status(),
+                    'query' => $query,
+                ]);
+                return null;
+            }
+
+            $data = $response->json();
+
+            if (empty($data['photos'])) {
+                return null;
+            }
+
+            // Return all photos so caller can choose
+            $result = [
+                'photos' => array_map(function($photo) {
+                    return [
+                        'id' => $photo['id'],
+                        'url' => $photo['src']['large2x'] ?? $photo['src']['large'],
+                        'original_url' => $photo['src']['original'],
+                        'photographer' => $photo['photographer'],
+                        'photographer_url' => $photo['photographer_url'],
+                        'pexels_url' => $photo['url'],
+                        'alt' => $photo['alt'] ?? '',
+                    ];
+                }, $data['photos']),
+                'total_results' => $data['total_results'] ?? 0,
+            ];
+            Cache::put($cacheKey, $result, 1800);
+
+            return $result;
+        }
+
+        return null;
     }
 
     /**

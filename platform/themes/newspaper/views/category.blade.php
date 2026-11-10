@@ -10,15 +10,49 @@
     SeoHelper::setDescription('Latest ' . $category->name . ' news, updates, and insights for Gen Z. Read breaking stories and trending topics on GenZ NewZ.');
     
     // Get featured posts from this category
+    // Freshness (2026-10-25): only featured posts from the last 14 days
+    // qualify; without a cap, a category's featured row froze on its newest
+    // flagged post for weeks. Short rows backfill with the category's newest
+    // posts (images first) instead of showing stale picks.
     $featuredPosts = Post::with(['slugable', 'categories', 'author'])
         ->whereHas('categories', function($q) use ($category) {
             $q->where('categories.id', $category->id);
         })
         ->where('is_featured', true)
         ->where('status', 'published')
+        ->where('created_at', '>=', now()->subDays(14))
         ->orderByDesc('created_at')
         ->take(3)
         ->get();
+
+    if ($featuredPosts->count() < 3) {
+        $needed = 3 - $featuredPosts->count();
+        $backfill = Post::with(['slugable', 'categories', 'author'])
+            ->whereHas('categories', function($q) use ($category) {
+                $q->where('categories.id', $category->id);
+            })
+            ->where('status', 'published')
+            ->whereNotIn('id', $featuredPosts->pluck('id'))
+            ->whereNotNull('image')
+            ->where('image', '!=', '')
+            ->orderByDesc('created_at')
+            ->take($needed)
+            ->get();
+        $featuredPosts = $featuredPosts->merge($backfill);
+    }
+
+    if ($featuredPosts->count() < 3) {
+        $backfillAny = Post::with(['slugable', 'categories', 'author'])
+            ->whereHas('categories', function($q) use ($category) {
+                $q->where('categories.id', $category->id);
+            })
+            ->where('status', 'published')
+            ->whereNotIn('id', $featuredPosts->pluck('id'))
+            ->orderByDesc('created_at')
+            ->take(3 - $featuredPosts->count())
+            ->get();
+        $featuredPosts = $featuredPosts->merge($backfillAny);
+    }
     
     // Subcategories are not rendered as page content any more: they live in the
     // header navigation, hanging off their parent beat.

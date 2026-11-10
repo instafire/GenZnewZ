@@ -37,6 +37,10 @@
                         <span>{{ $post->views }} views</span>
                         <span>•</span>
                         <span>{{ $post->created_at->diffForHumans() }}</span>
+                        @php $gznWords = str_word_count(strip_tags((string) $post->content)); @endphp
+                        @if ($gznWords >= 80)
+                        <span class="gzn-read-time">{{ max(1, (int) ceil($gznWords / 200)) }} min read</span>
+                        @endif
                     </div>
                 </div>
             </article>

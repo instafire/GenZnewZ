@@ -109,6 +109,13 @@
     text-underline-offset: 2px;
 }
 
+.ai-image-attribution {
+    font-size: 0.75rem;
+    color: #999;
+    text-align: center;
+    margin-bottom: 25px;
+}
+
 .pexels-attribution a:hover {
     color: #666;
 }
@@ -404,4 +411,57 @@ body.dark-mode .article-body blockquote {
         font-size: 34px;
         margin-bottom: 8px;
     }
+}
+
+/* Social embeds (ArticleSocialEmbedService): players appended after the
+   block that links a YouTube / Instagram / TikTok URL. */
+.gnz-embed {
+    margin: 1.75rem auto;
+    max-width: 560px;
+}
+
+.gnz-embed iframe {
+    display: block;
+    width: 100%;
+    border: 0;
+    border-radius: 12px;
+    background: #000;
+}
+
+.gnz-embed--youtube iframe {
+    aspect-ratio: 16 / 9;
+}
+
+.gnz-embed--tiktok {
+    max-width: 400px;
+}
+
+.gnz-embed--tiktok iframe {
+    aspect-ratio: 9 / 16;
+    max-height: 82vh;
+}
+
+.gnz-embed--instagram {
+    max-width: 420px;
+    /* embed.js parks the player absolutely while it measures; keep that
+       transient state anchored inside this card instead of the page. */
+    position: relative;
+}
+
+/* embed.js replaces this blockquote with a player it sizes to the
+   content; keep the placeholder free of the theme's quote styling. */
+.gnz-embed--instagram .instagram-media {
+    margin: 0 auto !important;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    max-width: 100%;
+    min-width: 0 !important;
+    width: 100%;
+}
+
+/* The player embed.js generates (it keeps the instagram-media class). */
+.gnz-embed--instagram iframe.instagram-media {
+    border-radius: 14px;
+    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.14);
 }

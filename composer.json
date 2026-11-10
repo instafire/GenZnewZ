@@ -2,7 +2,11 @@
     "name": "botble/cms",
     "type": "project",
     "description": "The Botble CMS application.",
-    "keywords": ["cms", "botble", "laravel"],
+    "keywords": [
+        "cms",
+        "botble",
+        "laravel"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.2",
@@ -79,7 +83,8 @@
             "Botble\\Blog\\": "platform/plugins/blog/src/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/",
-            "Theme\\Newspaper\\": "platform/themes/newspaper/src/"
+            "Theme\\Newspaper\\": "platform/themes/newspaper/src/",
+            "Reloop\\": "vendor/reloop/reloop-email/src/"
         }
     },
     "autoload-dev": {

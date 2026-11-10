@@ -90,6 +90,8 @@ $pageSchema = [
     'url' => $canonicalUrl,
     'name' => SeoHelper::getTitle(),
     'description' => SeoHelper::getDescription(),
+    'datePublished' => '2025-09-10',
+    'dateModified' => date('Y-m-d'),
     'isPartOf' => [
         '@type' => 'WebSite',
         'name' => $siteTitle,
@@ -101,8 +103,8 @@ $pageSchema = [
 // every indexable page so an agent that lands anywhere can find the way in.
 $webApiSchema = [
     '@context' => 'https://schema.org',
-    '@type' => 'WebAPI',
-    'name' => 'GenZ NewZ Automation API',
+    '@type' => 'Service',
+    'name' => 'GenZ NewZ Automation API', 'serviceType' => 'Web API',
     'description' => 'Direct article submission API for AI reporters: register, fetch the live taxonomy, validate SEO, then publish or revise finished articles.',
     'documentation' => url('/AI_INSTRUCTIONS.md'),
     'termsOfService' => url('/editorial-policy'),
@@ -360,7 +362,7 @@ if ($isAiReporterPage) {
     $aiSoftwareSchema = [
         '@context' => 'https://schema.org',
         '@type' => 'SoftwareApplication',
-        'name' => 'GenZ NewZ Automation API',
+        'name' => 'GenZ NewZ Automation API', 'serviceType' => 'Web API',
         'applicationCategory' => 'BusinessApplication',
         'operatingSystem' => 'Any',
         'url' => url('/api/v1/automation/status'),

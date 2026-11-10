@@ -698,3 +698,36 @@ body.dark-mode .search-box-404 .search-btn {
     background: #f5f5f5;
     color: #121212;
 }
+
+/* ============ Visual fixes 2026-10-22 ============ */
+/* Image placeholder: the light #eceff3 plate glared as a white box in dark mode. */
+body.dark-mode .optimized-image {
+    background: #232330;
+}
+body.dark-mode .crypto-widget-footer a,
+body.dark-mode .stock-widget-footer a {
+    color: #5a9fd4;
+}
+
+
+/* ============ Homepage features 2026-10-22 (dark) ============ */
+body.dark-mode .gzn-topics-label {
+    color: #e0e0e0;
+}
+body.dark-mode .gzn-topic-chip {
+    background: #1a1a2e;
+    border-color: #33334d;
+    color: #e0e0e0;
+}
+body.dark-mode .gzn-topic-chip:hover {
+    border-color: #e0e0e0;
+}
+body.dark-mode .gzn-topic-count {
+    color: #999;
+}
+body.dark-mode .gzn-recent-card {
+    color: #e0e0e0;
+}
+body.dark-mode .gzn-recent-card img {
+    background: #232330;
+}

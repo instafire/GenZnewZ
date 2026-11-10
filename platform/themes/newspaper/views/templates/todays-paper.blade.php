@@ -36,17 +36,42 @@
     $mainStory = $latestPosts->first();
     $otherStories = $latestPosts->skip(1)->take(19);
 
-    // Group stories by category for sections
-    $storiesByCategory = [];
-    foreach ($otherStories as $post) {
-        $categoryName = $post->categories->first()->name ?? 'General';
-        if (!isset($storiesByCategory[$categoryName])) {
-            $storiesByCategory[$categoryName] = [];
+    // Build disjoint front-page sections: every story appears exactly once,
+    // sections fill from the latest stories when their category runs short.
+    $usedIds = [$mainStory->id];
+    $pickByCategory = function (array $cats, int $limit) use ($otherStories, &$usedIds) {
+        $out = [];
+        foreach ($otherStories as $post) {
+            if (count($out) >= $limit) {
+                break;
+            }
+            if (in_array($post->id, $usedIds)) {
+                continue;
+            }
+            if (in_array($post->categories->first()->name ?? '', $cats)) {
+                $out[] = $post;
+                $usedIds[] = $post->id;
+            }
         }
-        if (count($storiesByCategory[$categoryName]) < 3) {
-            $storiesByCategory[$categoryName][] = $post;
+        return $out;
+    };
+    $fillSection = function (array $section, int $limit) use ($otherStories, &$usedIds) {
+        foreach ($otherStories as $post) {
+            if (count($section) >= $limit) {
+                break;
+            }
+            if (in_array($post->id, $usedIds)) {
+                continue;
+            }
+            $section[] = $post;
+            $usedIds[] = $post->id;
         }
-    }
+        return $section;
+    };
+    $worldStories = $fillSection($pickByCategory(['The World', 'World'], 5), 5);
+    $techStories = $fillSection($pickByCategory(['AI News', 'Tech & Games', 'Science', 'Latest Gadgets'], 3), 3);
+    $cultureStories = $fillSection($pickByCategory(['Culture', 'Fashion', 'Life Hacks', 'Music', 'Movies', 'Streetwear', 'Anime & Animation', 'Aesthetics'], 3), 3);
+    $briefs = $fillSection([], 8);
 
     SeoHelper::setTitle("Today's Paper | GenZ NewZ");
     SeoHelper::setDescription("Read today's GenZ NewZ front page with the latest headlines, market snapshot, culture coverage, and major stories across the newsroom.");
@@ -103,8 +128,7 @@
         <!-- Left Column -->
         <div class="news-column">
             <h3 class="column-header">World News</h3>
-            @foreach ($otherStories->take(5) as $post)
-                @if ($post->categories->first()->name ?? '' === 'The World' || $post->categories->first()->name ?? '' === 'World')
+            @foreach ($worldStories as $post)
                 <article class="news-item">
                     <h4 class="news-item-title">
                         <a href="{{ $post->url }}">{{ $post->name }}</a>
@@ -112,67 +136,44 @@
                     <p class="news-item-excerpt">{{ Str::limit($post->description, 120) }}</p>
                     <div class="news-item-meta">{{ $post->created_at->diffForHumans() }}</div>
                 </article>
-                @endif
-            @endforeach
-            
-            @php $worldCount = 0; @endphp
-            @foreach ($otherStories as $post)
-                @if (($post->categories->first()->name ?? '') !== 'The World' && ($post->categories->first()->name ?? '') !== 'World' && $worldCount < 3)
-                @php $worldCount++; @endphp
-                <article class="news-item">
-                    <h4 class="news-item-title">
-                        <a href="{{ $post->url }}">{{ $post->name }}</a>
-                    </h4>
-                    <p class="news-item-excerpt">{{ Str::limit($post->description, 120) }}</p>
-                    <div class="news-item-meta">{{ $post->created_at->diffForHumans() }}</div>
-                </article>
-                @endif
             @endforeach
         </div>
+
 
         <!-- Middle Column -->
         <div class="news-column">
             <h3 class="column-header">Technology & AI</h3>
-            @php $techCount = 0; @endphp
-            @foreach ($otherStories as $post)
-                @if ((($post->categories->first()->name ?? '') === 'AI News' || ($post->categories->first()->name ?? '') === 'Tech & Games') && $techCount < 4)
-                @php $techCount++; @endphp
-                <article class="news-item featured-item">
+            @foreach ($techStories as $index => $post)
+                <article class="news-item{{ $index === 0 ? ' featured-item' : '' }}">
                     <h4 class="news-item-title">
                         <a href="{{ $post->url }}">{{ $post->name }}</a>
                     </h4>
                     <p class="news-item-excerpt">{{ Str::limit($post->description, 150) }}</p>
                     <div class="news-item-meta">By <a href="{{ $post->author->url }}" class="author-link">{{ $post->author->name ?? 'Staff' }}</a> • {{ $post->created_at->format('g:i A') }}</div>
                 </article>
-                @endif
             @endforeach
 
             <h3 class="column-header" style="margin-top: 30px;">Culture & Lifestyle</h3>
-            @php $cultureCount = 0; @endphp
-            @foreach ($otherStories as $post)
-                @if ((($post->categories->first()->name ?? '') === 'Culture' || ($post->categories->first()->name ?? '') === 'Fashion' || ($post->categories->first()->name ?? '') === 'Life Hacks') && $cultureCount < 3)
-                @php $cultureCount++; @endphp
+            @foreach ($cultureStories as $post)
                 <article class="news-item">
                     <h4 class="news-item-title">
                         <a href="{{ $post->url }}">{{ $post->name }}</a>
                     </h4>
                     <p class="news-item-excerpt">{{ Str::limit($post->description, 100) }}</p>
                 </article>
-                @endif
             @endforeach
         </div>
+
 
         <!-- Right Column -->
         <div class="news-column">
             <h3 class="column-header">Briefs</h3>
             <div class="briefs-list">
-                @foreach ($otherStories->take(10) as $index => $post)
-                    @if ($index > 0)
+                @foreach ($briefs as $post)
                     <div class="brief-item">
                         <span class="brief-category">{{ $post->categories->first()->name ?? 'News' }}</span>
                         <a href="{{ $post->url }}" class="brief-title">{{ $post->name }}</a>
                     </div>
-                    @endif
                 @endforeach
             </div>
 
@@ -199,6 +200,7 @@
 </div>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap');
 .newspaper-container {
     max-width: 1100px;
     margin: 0 auto;
@@ -233,15 +235,12 @@
 }
 
 .masthead-title {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 3.5rem;
-    font-weight: 900;
-    letter-spacing: -2px;
+    font-family: 'UnifrakturMaguntia', 'Old English Text MT', Georgia, serif;
+    font-size: 4rem;
+    font-weight: 400;
+    letter-spacing: 0;
     margin: 0;
-    background: linear-gradient(135deg, #FF006E 0%, #FB5607 25%, #FFBE0B 50%, #8338EC 75%, #3A86FF 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #121212;
 }
 
 .masthead-edition {
@@ -284,7 +283,7 @@
 }
 
 .newspaper-nav a:hover {
-    color: #326891;
+    text-decoration: underline;
 }
 
 /* Main Headline */
@@ -301,7 +300,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 3px;
-    color: #FF006E;
+    color: #121212;
     margin-bottom: 15px;
 }
 
@@ -319,7 +318,7 @@
 }
 
 .headline-title a:hover {
-    color: #326891;
+    text-decoration: underline;
 }
 
 .headline-meta {
@@ -355,7 +354,7 @@
 }
 
 .continue-reading a {
-    color: #326891;
+    color: #121212;
     text-decoration: none;
 }
 
@@ -365,8 +364,10 @@
 
 /* Breaking Banner */
 .breaking-banner {
-    background: #121212;
-    color: #fff;
+    background: #fff;
+    color: #121212;
+    border-top: 2px solid #121212;
+    border-bottom: 1px solid #121212;
     padding: 10px 20px;
     margin-bottom: 25px;
     text-align: center;
@@ -378,8 +379,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 2px;
-    background: #FF006E;
-    padding: 3px 10px;
+    padding: 3px 0;
     margin-right: 15px;
 }
 
@@ -421,7 +421,6 @@
     }
     .masthead-title {
         font-size: 2.6rem;
-        letter-spacing: -1px;
     }
 }
 
@@ -471,7 +470,6 @@
 }
 
 .news-item-title a:hover {
-    color: #326891;
     text-decoration: underline;
 }
 
@@ -490,9 +488,9 @@
 }
 
 .featured-item {
-    background: #fafafa;
+    background: #f7f7f7;
     padding: 15px;
-    border-left: 3px solid #FF006E;
+    border-left: 3px solid #121212;
 }
 
 /* Briefs */
@@ -510,21 +508,23 @@
     font-size: 0.65rem;
     font-weight: 700;
     text-transform: uppercase;
-    color: #FF006E;
+    letter-spacing: 0.5px;
+    color: #727272;
     display: block;
     margin-bottom: 4px;
 }
 
 .brief-title {
-    font-size: 0.85rem;
-    font-weight: 600;
+    font-family: Georgia, serif;
+    font-size: 0.95rem;
+    font-weight: 700;
     color: #121212;
     text-decoration: none;
-    line-height: 1.4;
+    line-height: 1.35;
 }
 
 .brief-title:hover {
-    color: #326891;
+    text-decoration: underline;
 }
 
 /* Market Box */
@@ -566,12 +566,9 @@
     font-weight: 600;
 }
 
-.market-value.bullish {
-    color: #27ae60;
-}
-
+.market-value.bullish,
 .market-value.bearish {
-    color: #e74c3c;
+    color: #121212;
 }
 
 .last-update {
@@ -601,8 +598,8 @@
 }
 
 .paper-edition-footer a {
-    color: #326891;
-    text-decoration: none;
+    color: #121212;
+    text-decoration: underline;
 }
 
 /* Dark Mode Support */
@@ -616,10 +613,7 @@ body.dark-mode .newspaper-header {
 }
 
 body.dark-mode .masthead-title {
-    -webkit-text-fill-color: initial;
-    background: linear-gradient(135deg, #FF6B9D 0%, #FC8B4A 50%, #FFD93D 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #f5f5f5;
 }
 
 body.dark-mode .masthead-date,
@@ -637,7 +631,7 @@ body.dark-mode .newspaper-nav a {
 }
 
 body.dark-mode .newspaper-nav a:hover {
-    color: #5a9fd4;
+    color: #fff;
 }
 
 body.dark-mode .main-headline {
@@ -649,7 +643,7 @@ body.dark-mode .headline-title a {
 }
 
 body.dark-mode .headline-title a:hover {
-    color: #5a9fd4;
+    color: #fff;
 }
 
 body.dark-mode .headline-lead {
@@ -674,7 +668,7 @@ body.dark-mode .news-item-title a {
 }
 
 body.dark-mode .news-item-title a:hover {
-    color: #5a9fd4;
+    color: #fff;
 }
 
 body.dark-mode .news-item-excerpt {
@@ -702,7 +696,7 @@ body.dark-mode .brief-title {
 }
 
 body.dark-mode .brief-title:hover {
-    color: #5a9fd4;
+    color: #fff;
 }
 
 body.dark-mode .market-box {
@@ -724,5 +718,40 @@ body.dark-mode .paper-edition-rule {
 
 body.dark-mode .paper-edition-footer p {
     color: #888;
+}
+
+/* NYT monochrome fixes 2026-10-22: links inside the paper inherit ink;
+   dark mode gets light-ink variants for the elements restyled above. */
+.newspaper-container .news-item-meta a {
+    color: inherit;
+    text-decoration: none;
+}
+.newspaper-container .news-item-meta a:hover {
+    text-decoration: underline;
+}
+body.dark-mode .headline-section-label {
+    color: #e0e0e0;
+}
+body.dark-mode .continue-reading a {
+    color: #e0e0e0;
+}
+body.dark-mode .breaking-banner {
+    background: transparent;
+    color: #e0e0e0;
+    border-top-color: #444;
+    border-bottom-color: #444;
+}
+body.dark-mode .featured-item {
+    border-left-color: #e0e0e0;
+}
+body.dark-mode .brief-category {
+    color: #999;
+}
+body.dark-mode .market-value.bullish,
+body.dark-mode .market-value.bearish {
+    color: #e0e0e0;
+}
+body.dark-mode .paper-edition-footer a {
+    color: #e0e0e0;
 }
 </style>

@@ -2626,24 +2626,21 @@ body.dark-mode .recommended-meta {
 .homepage-entry-strip {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    width: min(100%, 1280px);
+    width: min(calc(100% - 2rem), 1280px);
     margin: 0 auto;
-    border: 1px solid #d9dee8;
-    border-top: 0;
-    background: #fff;
+    border: 0;
+    background: transparent;
 }
 
 .homepage-entry-strip > a {
     min-width: 0;
     gap: 12px;
     padding: 18px 20px;
-    border-right: 1px solid #d9dee8;
     color: #111827;
     text-decoration: none;
     transition: background .18s ease, color .18s ease;
 }
 
-.homepage-entry-strip > a:last-child { border-right: 0; }
 .homepage-entry-strip > a:hover { color: #111827; background: #fff8e8; }
 .homepage-entry-icon { flex: 0 0 auto; color: #ef5b7a; font-size: 1.25rem; }
 .homepage-entry-strip strong,
@@ -2661,7 +2658,7 @@ body.dark-mode .recommended-meta {
 .homepage-feed-link { color: #326891; font-family: 'IBM Plex Mono', monospace; font-size: .73rem; font-weight: 700; text-decoration: none; text-transform: uppercase; }
 .homepage-feed-link:hover { text-decoration: underline; }
 
-body.dark-mode .homepage-entry-strip { border-color: #333; background: #1a1a1a; }
+body.dark-mode .homepage-entry-strip { background: transparent; }
 body.dark-mode .homepage-entry-strip > a { border-color: #333; color: #f0f0f0; }
 body.dark-mode .homepage-entry-strip > a:hover { color: #fff; background: #29251b; }
 body.dark-mode .homepage-entry-strip small { color: #aaa; }
@@ -2672,9 +2669,6 @@ body.dark-mode .homepage-feed-heading h2 { color: #f0f0f0; }
     .homepage-hero { grid-template-columns: 1fr; }
     .homepage-hero-signal { max-width: 620px; }
     .homepage-entry-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .homepage-entry-strip > a:nth-child(2) { border-right: 0; }
-    .homepage-entry-strip > a:nth-child(-n+2) { border-bottom: 1px solid #d9dee8; }
-    body.dark-mode .homepage-entry-strip > a:nth-child(-n+2) { border-bottom-color: #333; }
 }
 
 @media (max-width: 590px) {
@@ -2688,10 +2682,6 @@ body.dark-mode .homepage-feed-heading h2 { color: #f0f0f0; }
     .homepage-hero-metrics strong { font-size: 1.2rem; }
     .homepage-hero-metrics span { font-size: .58rem; }
     .homepage-entry-strip { grid-template-columns: 1fr; }
-    .homepage-entry-strip > a,
-    .homepage-entry-strip > a:nth-child(2) { border-right: 0; border-bottom: 1px solid #d9dee8; }
-    .homepage-entry-strip > a:last-child { border-bottom: 0; }
-    body.dark-mode .homepage-entry-strip > a { border-bottom-color: #333; }
     .homepage-feed-heading { align-items: flex-end; gap: 12px; }
     .homepage-feed-link { white-space: nowrap; }
 }
@@ -3879,4 +3869,226 @@ body.dark-mode .saved-item-remove { color: #7a7a7a; }
     body.dark-mode .newspaper-layout > .newspaper-sidebar.left {
         border-bottom-color: #333;
     }
+}
+
+/* ============ Visual fixes 2026-10-22 (landing text/render) ============ */
+/* Meta rows: separators ride with the item they precede, so a wrapped meta
+   line never strands a bullet at the end of the previous line. */
+.featured-meta,
+.featured-secondary-meta {
+    align-items: center;
+    row-gap: 2px;
+}
+.featured-meta > span,
+.featured-secondary-meta > span {
+    white-space: nowrap;
+}
+.featured-meta > span:nth-child(2),
+.featured-meta > span:nth-child(4),
+.featured-secondary-meta > span:nth-child(2),
+.featured-secondary-meta > span:nth-child(4) {
+    display: none;
+}
+.featured-meta > span:nth-child(3)::before,
+.featured-meta > span:nth-child(5)::before,
+.featured-secondary-meta > span:nth-child(3)::before,
+.featured-secondary-meta > span:nth-child(5)::before {
+    content: "•";
+    margin-right: 8px;
+}
+
+/* Async widget footers: the controller emits a classless link; style it like
+   the other view-all links and never let it split across lines. */
+.crypto-widget-footer,
+.stock-widget-footer {
+    flex-wrap: wrap;
+    row-gap: 4px;
+}
+.crypto-widget-footer a,
+.stock-widget-footer a {
+    color: #326891;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+}
+.crypto-widget-footer a:hover,
+.stock-widget-footer a:hover {
+    text-decoration: underline;
+}
+.crypto-view-all,
+.stock-view-all {
+    white-space: nowrap;
+}
+
+/* Recommendation meta: #888 failed contrast on the light card (3.5:1) and
+   on the dark-mode card #252545 (4.1:1) at 0.75rem. */
+.recommendation-meta {
+    color: #666;
+}
+body.dark-mode .recommendation-meta {
+    color: #a8a8ba;
+}
+
+/* Comment submit (fob plugin): white on --color-1st (#5a9fd4) was 2.86:1. */
+body .fob-comment-form .btn.btn-primary {
+    background-color: #2f6db3;
+    border-color: #2f6db3;
+}
+
+/* Visual fixes 2026-10-22b: tighten secondary meta so author/views/date fit one line */
+.featured-secondary-meta {
+    font-size: 0.75rem;
+    gap: 6px;
+}
+.featured-secondary-meta > span:nth-child(3)::before,
+.featured-secondary-meta > span:nth-child(5)::before {
+    margin-right: 6px;
+}
+
+/* Visual fixes 2026-10-22c: category-card metas had the same dangling
+   separator as the featured cards - bullets travel with their item. */
+.news-card-meta-row > span:nth-child(2),
+.news-card-meta-row > span:nth-child(4) {
+    display: none;
+}
+.news-card-meta-row > span:nth-child(3)::before,
+.news-card-meta-row > span:nth-child(5)::before {
+    content: "•";
+    margin-right: 8px;
+}
+
+
+/* ============ Homepage features 2026-10-22 ============ */
+/* Topic chips */
+.gzn-topics {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    max-width: 1280px;
+    margin: 18px auto 4px;
+    padding: 0 16px;
+}
+.gzn-topics-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    white-space: nowrap;
+    color: #121212;
+}
+.gzn-topics-row {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
+}
+.gzn-topics-row::-webkit-scrollbar {
+    display: none;
+}
+.gzn-topic-chip {
+    white-space: nowrap;
+    border: 1px solid #d9dee8;
+    border-radius: 999px;
+    padding: 0.42rem 0.85rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #121212;
+    background: #fff;
+    text-decoration: none;
+}
+.gzn-topic-chip:hover {
+    border-color: #121212;
+    text-decoration: none;
+}
+.gzn-topic-count {
+    color: #888;
+    font-size: 0.72rem;
+    font-weight: 500;
+    margin-left: 2px;
+}
+
+/* Read time on cards */
+.gzn-read-time::before,
+.ai-card-readtime::before {
+    content: "•";
+    margin-right: 6px;
+}
+
+/* Jump back in */
+.gzn-recent {
+    max-width: 1280px;
+    margin: 10px auto 0;
+    padding: 0 16px;
+}
+.gzn-recent-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 14px;
+}
+.gzn-recent-card {
+    text-decoration: none;
+    color: #121212;
+}
+.gzn-recent-card img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 12px;
+    display: block;
+    margin-bottom: 8px;
+    background: #eceff3;
+}
+.gzn-recent-card span {
+    font-family: Georgia, serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.gzn-recent-card:hover span {
+    text-decoration: underline;
+}
+@media (max-width: 768px) {
+    .gzn-recent-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .gzn-topics {
+        align-items: flex-start;
+    }
+}
+
+/* Topic chips drag-scroll (2026-10-22) */
+.gzn-topics-row {
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+}
+.gzn-topics-row.is-dragging {
+    cursor: grabbing;
+}
+.gzn-topic-chip {
+    -webkit-user-drag: none;
+}
+
+/* ============ 2026-10-25 mobile compaction + topics fade ============ */
+/* Phones: entry strip becomes a compact 2x2 grid (subtitles hidden) so the
+   news starts higher on the page. Titles alone are self-explanatory. */
+@media (max-width: 590px) {
+    .homepage-entry-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .homepage-entry-strip > a { padding: 14px 14px; gap: 10px; }
+    .homepage-entry-strip small { display: none; }
+    .homepage-entry-strip .homepage-entry-icon { font-size: 1.1rem; }
+}
+/* Topics row: fade the right edge so the cut-off chip reads as scrollable. */
+.gzn-topics-row {
+    -webkit-mask-image: linear-gradient(to right, #000 88%, transparent 100%);
+    mask-image: linear-gradient(to right, #000 88%, transparent 100%);
 }

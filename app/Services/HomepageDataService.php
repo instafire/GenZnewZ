@@ -43,6 +43,7 @@ class HomepageDataService
                 'id',
                 'name',
                 'description',
+                'content',
                 'image',
                 'status',
                 'author_id',
@@ -100,9 +101,15 @@ class HomepageDataService
                 $aiTextPosts = $aiTextPosts->merge($additional);
             }
 
+            // Featured rail freshness (2026-10-25): only featured posts from
+            // the last 14 days qualify. Without a cap, the rail froze on the
+            // newest featured-with-image posts — which agents set rarely — so
+            // it showed weeks-old stories while fresh posts piled up. The
+            // backfill below keeps the rail full with the newest image posts.
             $featuredStories = $homepagePostQuery()
                 ->where('is_featured', true)
                 ->where('status', 'published')
+                ->where('created_at', '>=', now()->subDays(14))
                 ->whereNotIn('id', $aiTextPosts->pluck('id'))
                 ->whereNotNull('image')
                 ->where('image', '!=', '')

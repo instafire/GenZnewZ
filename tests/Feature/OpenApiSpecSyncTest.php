@@ -310,6 +310,11 @@ class OpenApiSpecSyncTest extends TestCase
                     continue;
                 }
 
+                // Binary uploads: max: is kilobytes, not a string length.
+                if (($schema['format'] ?? null) === 'binary') {
+                    continue;
+                }
+
                 if (preg_match('/max:(\d+)/', $rule, $m)) {
                     $this->assertSame(
                         (int) $m[1],
@@ -530,7 +535,9 @@ class OpenApiSpecSyncTest extends TestCase
                 }
 
                 $key = strtoupper($method) . ' ' . $path;
-                $schema = $operation['requestBody']['content']['application/json']['schema'] ?? [];
+                $schema = $operation['requestBody']['content']['application/json']['schema']
+                    ?? $operation['requestBody']['content']['multipart/form-data']['schema']
+                    ?? [];
 
                 if (isset($schema['$ref'])) {
                     $schema = $this->resolvePointer($spec, $schema['$ref']) ?? [];

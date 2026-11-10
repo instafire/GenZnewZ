@@ -1,6 +1,6 @@
 <div id="gzn-news-chat" class="gzn-news-chat" data-endpoint="{{ route('api.news-chat.message') }}">
     <button type="button" class="gzn-news-chat__trigger" data-chat-toggle aria-controls="gzn-news-chat-panel" aria-expanded="false" aria-label="Open GenZ Ai chat">
-        <span class="gzn-news-chat__trigger-dot" aria-hidden="true">Ai News</span>
+        <span class="gzn-news-chat__trigger-dot" aria-hidden="true">AI Chat</span>
     </button>
 
     <section id="gzn-news-chat-panel" class="gzn-news-chat__panel" data-chat-panel hidden aria-live="polite">
