@@ -6,6 +6,7 @@ use App\Services\IndexNowService;
 use Botble\Setting\Facades\Setting;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\URL;
 use Tests\TestCase;
 use Tests\Traits\RefreshDatabaseWithPlugins;
 
@@ -21,6 +22,18 @@ class IndexNowSubmissionTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        // The host guard compares against config('app.url'), which defaults to
+        // http://localhost in tests — under that default, 'http://localhost/...'
+        // looks like an own-host URL and the "another host" assertions below
+        // would submit instead of refusing. Pin the production host so the
+        // foreign-host fixtures are genuinely foreign in any environment.
+        // forceRootUrl() is the other half: url() is resolved from the URL
+        // generator's cached root, not re-read from config, so without it the
+        // own-host fixtures still build localhost URLs and the guard refuses
+        // them (the submit tests silently return false and send nothing).
+        config(['app.url' => 'https://genznewz.com']);
+        URL::forceRootUrl('https://genznewz.com');
 
         Cache::flush();
     }

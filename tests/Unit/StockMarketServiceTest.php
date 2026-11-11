@@ -37,7 +37,16 @@ class StockMarketServiceTest extends TestCase
     {
         Http::fake([
             '*' => function () {
-                throw new \Exception('network down');
+                // A plain \Exception trips Laravel's HTTP-client promise chain:
+                // PendingRequest::makePromise() only accepts TransferException
+                // (and friends) in its rejection handler, so a generic Exception
+                // escapes as a TypeError before the service's catch can run.
+                // A ConnectException is what Guzzle actually throws when the
+                // network is down, so this is the realistic failure shape.
+                throw new \GuzzleHttp\Exception\ConnectException(
+                    'network down',
+                    new \GuzzleHttp\Psr7\Request('GET', 'https://api.massive.app/stocks/prices')
+                );
             },
         ]);
 

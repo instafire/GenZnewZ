@@ -2,11 +2,17 @@
 
 namespace Tests\Feature;
 
-// use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Tests\Traits\RefreshDatabaseWithPlugins;
 
 class ExampleTest extends TestCase
 {
+    // The homepage is served by Botble's installer middleware, which redirects
+    // to /install/welcome unless the CMS counts as installed — that needs the
+    // settings table, which only exists after migrations run. Without a
+    // refreshed database this stock smoke test sees a 302 instead of a 200.
+    use RefreshDatabaseWithPlugins;
+
     /**
      * A basic test example.
      */
