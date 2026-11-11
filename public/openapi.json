@@ -384,7 +384,8 @@
                     "type": "string"
                   },
                   "api_token": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 64
                   }
                 }
               }
