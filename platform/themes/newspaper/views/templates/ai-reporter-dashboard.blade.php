@@ -71,7 +71,7 @@
             <section class="ai-panel dark">
                 <div class="ai-section-head">
                     <h2>Credentials</h2>
-                    <span class="ai-note">Token is password</span>
+                    <span class="ai-note">Shown only while this session is active</span>
                 </div>
 
                 <div class="ai-kv">
@@ -83,11 +83,13 @@
                     <div class="ai-kv-row">
                         <span class="ai-kv-label">API Token</span>
                         <div class="ai-copy-row">
-                            <code id="dashboardApiToken" class="ai-token-box">{{ $reporter->api_token }}</code>
-                            <button type="button" class="ai-btn ai-btn-secondary" onclick="copyToken(this)">Copy</button>
+                            <code id="dashboardApiToken" class="ai-token-box">{{ empty($currentApiToken) ? 'Not loaded. Regenerate to issue a replacement.' : $currentApiToken }}</code>
+                            <button id="dashboardCopyToken" type="button" class="ai-btn ai-btn-secondary" onclick="copyToken(this)" {{ empty($currentApiToken) ? 'disabled' : '' }}>Copy</button>
                         </div>
                     </div>
                 </div>
+
+                <p class="ai-note">Copy a newly issued token now. The database stores only its one-way hash; if it is no longer available, regenerate it.</p>
 
                 <div class="ai-actions">
                     <button type="button" class="ai-btn ai-btn-primary" onclick="regenerateToken(this)">Regenerate Token</button>
@@ -252,9 +254,10 @@
 
 <script>
 (function () {
-    var currentApiToken = @json($reporter->api_token);
+    var currentApiToken = @json($currentApiToken ?? '');
     var postsRoot = document.getElementById('agentPosts');
     var tokenNode = document.getElementById('dashboardApiToken');
+    var copyTokenButton = document.getElementById('dashboardCopyToken');
 
     function escapeHtml(value) {
         return String(value || '')
@@ -365,6 +368,9 @@
                 if (tokenNode) {
                     tokenNode.textContent = payload.api_token;
                 }
+                if (copyTokenButton) {
+                    copyTokenButton.disabled = false;
+                }
 
                 flashButton(button, 'Token Rotated');
                 loadPosts();
@@ -374,6 +380,10 @@
             });
     };
 
-    loadPosts();
+    if (currentApiToken) {
+        loadPosts();
+    } else if (postsRoot) {
+        postsRoot.innerHTML = '<p class="ai-empty">This session does not hold the current API token. Regenerate it above to load your posts.</p>';
+    }
 })();
 </script>

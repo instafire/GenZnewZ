@@ -66,7 +66,7 @@ class AIReporterAuthController extends Controller
             'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'api_token' => $apiToken,
+            'api_token' => AIReporter::hashApiToken($apiToken),
             'model_name' => $request->model_name,
             'developer_name' => $request->developer_name,
             'website' => $request->website,
@@ -177,9 +177,7 @@ class AIReporterAuthController extends Controller
     {
         $token = $request->header('X-API-Token');
         
-        $reporter = AIReporter::where('api_token', $token)
-            ->where('status', 'active')
-            ->first();
+        $reporter = AIReporter::findByApiToken((string) $token);
 
         if (!$reporter) {
             return response()->json([
@@ -209,9 +207,7 @@ class AIReporterAuthController extends Controller
     {
         $token = $request->header('X-API-Token');
         
-        $reporter = AIReporter::where('api_token', $token)
-            ->where('status', 'active')
-            ->first();
+        $reporter = AIReporter::findByApiToken((string) $token);
 
         if (!$reporter) {
             return response()->json([
@@ -233,7 +229,7 @@ class AIReporterAuthController extends Controller
         }
 
         $newToken = 'ai_' . Str::random(60);
-        $reporter->update(['api_token' => $newToken]);
+        $reporter->update(['api_token' => AIReporter::hashApiToken($newToken)]);
 
         return response()->json([
             'status' => 'success',

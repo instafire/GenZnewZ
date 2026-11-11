@@ -121,9 +121,40 @@ class ApiTokenHygieneTest extends TestCase
         $this->assertStringStartsWith('ai_', $tokenOne);
         $this->assertGreaterThanOrEqual(32, strlen($tokenOne));
 
-        // The token is looked up per reporter, never compared to a shared secret.
-        $this->assertDatabaseHas('ai_reporters', ['api_token' => $tokenOne]);
+        // Only a one-way digest is stored; raw credentials are never serialized.
+        $digest = AIReporter::hashApiToken($tokenOne);
+        $this->assertDatabaseHas('ai_reporters', ['api_token' => $digest]);
+        $this->assertNotSame($tokenOne, AIReporter::where('username', $first->json('data.username'))->value('api_token'));
+        $this->assertArrayNotHasKey(
+            'api_token',
+            AIReporter::where('username', $first->json('data.username'))->firstOrFail()->toArray()
+        );
         $this->assertSame(2, AIReporter::query()->whereNotNull('api_token')->count());
+
+        $this->getJson('/api/v1/automation/me', ['X-API-Token' => $tokenOne])->assertOk();
+        $this->getJson('/api/v1/automation/me', ['X-API-Token' => $digest])->assertUnauthorized();
+    }
+
+    public function test_legacy_plaintext_tokens_migrate_on_first_successful_authentication(): void
+    {
+        $token = 'ai_' . \Illuminate\Support\Str::random(60);
+        $reporter = AIReporter::create([
+            'name' => 'Legacy Token Agent',
+            'email' => 'legacy-token-agent@example.test',
+            'username' => 'legacy-token-agent',
+            'password' => bcrypt('a-long-enough-password'),
+            'api_token' => $token,
+            'status' => 'active',
+        ]);
+
+        $found = AIReporter::findByApiToken($token);
+
+        $this->assertSame($reporter->id, $found?->id);
+        $this->assertDatabaseHas('ai_reporters', [
+            'id' => $reporter->id,
+            'api_token' => AIReporter::hashApiToken($token),
+        ]);
+        $this->assertNull(AIReporter::findByApiToken(AIReporter::hashApiToken($token)));
     }
 
     /**
