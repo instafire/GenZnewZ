@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Console\Commands\GenerateSitemap;
 use App\Services\SearchEnginePingService;
 use Illuminate\Support\Facades\Cache;
 use Tests\Concerns\CreatesPosts;
@@ -231,6 +232,42 @@ class SearchVisibilityTest extends TestCase
         $this->assertSame(1, $xpath->query(
             '//sm:url[sm:loc="' . $withImage->url . '"]/image:image'
         )->length);
+    }
+
+    /**
+     * Regression test for the suite rewriting the committed public/*.xml
+     * sitemaps from the test database. The publish path calls
+     * `sitemap:generate --type all` with no --path/--output-dir, so a run
+     * used to replace the 9,823-article sitemaps with test-fixture content
+     * and leave the working tree dirty. Under PHPUnit the command must write
+     * to an isolated temp directory instead.
+     */
+    public function test_sitemap_generation_in_tests_never_touches_committed_files(): void
+    {
+        $committed = ['sitemap.xml', 'sitemap-posts.xml', 'sitemap-pages.xml', 'sitemap-ai.xml', 'news-sitemap.xml'];
+
+        $before = [];
+        foreach ($committed as $file) {
+            $path = base_path('public/' . $file);
+            $this->assertFileExists($path);
+            $before[$file] = md5_file($path);
+        }
+
+        // Exactly what the publish ping calls: no --path, no --output-dir.
+        $this->artisan('sitemap:generate', ['--type' => 'all'])->assertSuccessful();
+
+        foreach ($committed as $file) {
+            $this->assertSame(
+                $before[$file],
+                md5_file(base_path('public/' . $file)),
+                "Running the suite rewrote committed public/{$file}."
+            );
+
+            $this->assertFileExists(
+                GenerateSitemap::testingOutputDir() . '/' . $file,
+                "Expected {$file} to be generated in the isolated test directory."
+            );
+        }
     }
 
     public function test_organization_schema_declares_editorial_policies(): void

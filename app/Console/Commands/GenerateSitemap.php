@@ -40,8 +40,14 @@ class GenerateSitemap extends Command
             $response = SiteMapManager::render('xml');
             $content = $response->getContent();
 
-            // Save to file
-            $target = $this->resolvePath($path);
+            // Save to file. In tests the default --path would overwrite the
+            // committed public/sitemap.xml (the publish path calls this command
+            // with no --path/--output-dir); redirect the default into the
+            // isolated test directory. An explicitly supplied --path is always
+            // honoured as-is.
+            $target = ($path === 'public/sitemap.xml' && app()->runningUnitTests())
+                ? static::testingOutputDir() . '/sitemap.xml'
+                : $this->resolvePath($path);
             file_put_contents($target, $content);
 
             $this->info("Sitemap generated successfully at: {$target}");
@@ -430,18 +436,51 @@ class GenerateSitemap extends Command
     }
 
     /**
+     * Directory sitemap files are written to when no --output-dir is given.
+     * Production behaviour is unchanged (public/). Under PHPUnit the files go
+     * to an isolated temp directory instead, so a test run can never rewrite
+     * the committed public/*.xml sitemaps - the same guard IndexNowService
+     * uses for its key file, applied here to the command every write path
+     * funnels through (the publish ping, the PingSearchEngines command and
+     * direct artisan calls alike).
+     */
+    protected function outputDir(): string
+    {
+        $dir = (string) $this->option('output-dir');
+
+        if ($dir !== '') {
+            return rtrim($dir, '/\\');
+        }
+
+        if (app()->runningUnitTests()) {
+            return static::testingOutputDir();
+        }
+
+        return base_path('public');
+    }
+
+    /**
+     * Isolated directory used for generated sitemaps while running under
+     * PHPUnit. Public so tests can assert the files landed here.
+     */
+    public static function testingOutputDir(): string
+    {
+        $dir = sys_get_temp_dir() . '/gzn-sitemap-generated';
+
+        if (! is_dir($dir)) {
+            @mkdir($dir, 0777, true);
+        }
+
+        return $dir;
+    }
+
+    /**
      * Resolve where a generated sitemap file should be written. Defaults to
      * public/ so production behaviour is unchanged; tests override it.
      */
     protected function outputPath(string $file): string
     {
-        $dir = (string) $this->option('output-dir');
-
-        if ($dir === '') {
-            return base_path('public/' . $file);
-        }
-
-        return rtrim($dir, '/\\') . '/' . $file;
+        return $this->outputDir() . '/' . $file;
     }
 
     /**
