@@ -17,6 +17,7 @@
         "botble/installer": "@dev",
         "botble/menu": "@dev",
         "botble/optimize": "@dev",
+        "botble/plugin-management": "@dev",
         "botble/revision": "@dev",
         "botble/seo-helper": "@dev",
         "botble/shortcode": "@dev",
@@ -66,8 +67,6 @@
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
-            "Aws\\Script\\Composer\\Composer::removeUnusedServices",
-            "Google\\Task\\Composer\\cleanup",
             "@php artisan cms:publish:assets"
         ],
         "post-root-package-install": [
