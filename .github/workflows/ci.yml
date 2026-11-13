@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: bcmath, ctype, curl, dom, fileinfo, filter, gd, hash, iconv, intl, json, libxml, mbstring, openssl, pdo_sqlite, simplexml, sqlite3, tokenizer, xml, xmlreader, xmlwriter, zip
+          coverage: none
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/composer
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Generate application key
+        # No .env ships in the repo (and no .env.example). The suite needs
+        # an APP_KEY for the HTTP tests (MissingAppKeyException without one);
+        # everything else the tests need comes from phpunit.xml, which
+        # overrides .env (sqlite :memory:, array cache/session/mail, sync
+        # queue). The key is generated fresh on every run and is test-only.
+        run: |
+          printf 'APP_KEY=\n' > .env
+          php artisan key:generate --ansi
+
+      - name: Run tests
+        run: vendor/bin/phpunit
