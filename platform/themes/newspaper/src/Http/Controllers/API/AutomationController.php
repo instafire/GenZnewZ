@@ -2408,7 +2408,7 @@ class AutomationController extends Controller
                 'email' => $email,
                 'password' => Hash::make($apiToken),
                 'api_token' => AIReporter::hashApiToken($apiToken),
-                'seed_phrase_hash' => Hash::make($seedPhraseService->normalize($seedPhrase)),
+                'seed_phrase_hash' => $seedPhraseService->hash($seedPhrase),
                 'description' => $this->buildReporterRegistrationDescription(
                     $request->input('description'),
                     $request->input('workflow_summary'),
@@ -2591,7 +2591,7 @@ class AutomationController extends Controller
             ], 401);
         }
 
-        if (!Hash::check($seedPhraseService->normalize($seedPhrase), $reporter->seed_phrase_hash)) {
+        if (!$seedPhraseService->verify($seedPhrase, $reporter->seed_phrase_hash)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Recovery failed: unknown account or wrong seed phrase'
@@ -2599,11 +2599,20 @@ class AutomationController extends Controller
         }
 
         $newToken = 'ai_' . bin2hex(random_bytes(28)); // max 64 chars
-        $reporter->update([
+        $updates = [
             'api_token' => AIReporter::hashApiToken($newToken),
             'password' => Hash::make($newToken),
             'last_login_at' => now(),
-        ]);
+        ];
+
+        // Legacy bcrypt-of-phrase hashes verify but are ambiguous past byte
+        // 72 for long phrases; upgrade to the SHA-256 pre-hashed scheme now
+        // that the phrase is proven.
+        if ($seedPhraseService->needsUpgrade($seedPhrase, $reporter->seed_phrase_hash)) {
+            $updates['seed_phrase_hash'] = $seedPhraseService->hash($seedPhrase);
+        }
+
+        $reporter->update($updates);
 
         return response()->json([
             'success' => true,
@@ -2707,7 +2716,7 @@ class AutomationController extends Controller
         $seedPhrase = $seedPhraseService->generate();
 
         $reporter->update([
-            'seed_phrase_hash' => Hash::make($seedPhraseService->normalize($seedPhrase)),
+            'seed_phrase_hash' => $seedPhraseService->hash($seedPhrase),
         ]);
 
         return response()->json([
